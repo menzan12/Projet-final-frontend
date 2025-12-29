@@ -1,20 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../services/authService";
 import { useAuth } from "../hooks/useAuth";
 import { AlertCircle, Briefcase, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 const Login: React.FC = () => {
-  // États pour les champs du formulaire
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // États pour l'UI
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,17 +19,15 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const data = await loginUser({ email, password });
-      login(data.user);
+      await login(email, password);
 
-      // Redirection intelligente selon le rôle
       const routes: Record<string, string> = {
         admin: "/admin",
         vendor: "/vendor",
         client: "/",
       };
 
-      navigate(routes[data.user.role] || "/");
+      navigate(routes[user?.role ?? "client"]);
     } catch (err: any) {
       setError(err.response?.data?.message || "Identifiants incorrects");
     } finally {
@@ -42,23 +36,27 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-blue-100">
-      {/* Partie gauche : Formulaire */}
-      <div className="flex-1 flex items-center justify-center px-6 bg-white">
-        <div className="w-full max-w-md space-y-8 ">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-blue-100">
+      {/* Partie gauche : Fond bleu + card */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-blue-200">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-8">
           {/* Logo */}
           <div>
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                <Briefcase className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+                <img src="/image/Logo.png" alt="Image Logo" />
               </div>
-              <span className="text-2xl font-bold text-gray-900">
+              <span
+                className="hidden sm:block text-xl font-bold 
+                   bg-gradient-to-r from-blue-600 to-orange-500 
+                   bg-clip-text text-transparent"
+              >
                 SkillMarket
               </span>
             </div>
 
             <h2 className="text-3xl font-bold text-gray-900">Bienvenue</h2>
-            <p className="text-sm text-gray-600 mt-2">
+            <p className="text-sm font-bold text-gray-600 mt-2">
               Connectez-vous pour accéder à votre compte
             </p>
           </div>
@@ -71,6 +69,7 @@ const Login: React.FC = () => {
             </div>
           )}
 
+          {/* Formulaire */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
@@ -119,7 +118,7 @@ const Login: React.FC = () => {
               </div>
             </div>
 
-            {/* Bouton de soumission */}
+            {/* Bouton */}
             <button
               type="submit"
               disabled={loading}
@@ -135,7 +134,7 @@ const Login: React.FC = () => {
               )}
             </button>
 
-            <p className="text-center text-sm text-gray-600">
+            <p className="text-center font-bold text-sm text-gray-600">
               Pas encore de compte ?{" "}
               <Link
                 to="/register"
@@ -150,24 +149,18 @@ const Login: React.FC = () => {
 
       {/* Partie droite : Visuel */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        {/* Image de fond */}
         <img
           src="/image/serviceLogin.jpg"
           alt="Service"
           className="absolute inset-0 w-full h-full object-cover"
         />
-
-        {/* Overlay sombre */}
         <div className="absolute inset-0 bg-black/50"></div>
-
-        {/* Contenu texte */}
         <div className="relative z-10 flex items-center justify-center p-12 text-white">
-          <div className="max-w-md">
-            <h2 className="text-4xl font-bold leading-tight">
+          <div className="max-w-md text-center lg:text-left">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
               Trouvez & proposez des services en toute simplicité
             </h2>
-
-            <p className="mt-6 font-bold text-lg text-white/90">
+            <p className="mt-6 font-bold text-base sm:text-lg text-white/90">
               Rejoignez notre communauté de professionnels et développez votre
               activité dès aujourd’hui.
             </p>

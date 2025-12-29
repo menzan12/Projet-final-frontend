@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { Briefcase, Lock, Mail, Search, User } from "lucide-react";
+import { Briefcase, Eye, EyeOff, Lock, Mail, Search, User } from "lucide-react";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +13,7 @@ const Register: React.FC = () => {
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,18 +37,24 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-100 px-6">
-      {/* ===== CARD PRINCIPALE ===== */}
-      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden flex">
-        {/* ========= GAUCHE : FORMULAIRE ========= */}
-        <div className="w-1/2 flex items-center justify-center p-10">
+    <div className="h-screen w-screen flex items-center justify-center bg-orange-100 overflow-hidden">
+      {/* Card principale */}
+      <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row">
+        {/* Gauche : Formulaire */}
+        <div className="flex-1 flex items-center justify-center p-8">
           <div className="w-full max-w-md space-y-6">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
-                <Briefcase className="text-white" />
+              <div className="w-10 h-10  rounded-xl flex items-center justify-center">
+                <img src="/image/Logo.png" alt="Image Logo" />
               </div>
-              <span className="text-xl font-bold">SkillMarket</span>
+              <span
+                className="hidden sm:block text-xl font-bold 
+                   bg-gradient-to-r from-blue-600 to-orange-500 
+                   bg-clip-text text-transparent"
+              >
+                SkillMarket
+              </span>
             </div>
 
             <h2 className="text-2xl font-bold">Créer un compte</h2>
@@ -65,22 +72,22 @@ const Register: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* ROLE */}
+              {/* Rôle */}
               <div>
                 <p className="text-xs uppercase font-bold text-gray-500 mb-3">
                   Je souhaite
                 </p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, role: "client" })}
                     className={`flex items-center gap-2 p-3 rounded-lg border-2 ${
                       formData.role === "client"
-                        ? "border-green-600 bg-blue-50 text-green-600"
+                        ? "border-orange-600 bg-blue-50 text-orange-600"
                         : "border-gray-200 text-gray-600"
                     }`}
                   >
-                    <Search className="w-4 h-4" />
+                    <Search className="w-4 h-4 font-bold" />
                     Trouver un service
                   </button>
 
@@ -89,27 +96,27 @@ const Register: React.FC = () => {
                     onClick={() => setFormData({ ...formData, role: "vendor" })}
                     className={`flex items-center gap-2 p-3 rounded-lg border-2 ${
                       formData.role === "vendor"
-                        ? "border-green-600 bg-blue-50 text-green-600"
+                        ? "border-orange-600 bg-blue-50 text-orange-600"
                         : "border-gray-200 text-gray-600"
                     }`}
                   >
-                    <Briefcase className="w-4 h-4" />
+                    <Briefcase className="w-4 h-4 font-bold" />
                     Proposer mes services
                   </button>
                 </div>
               </div>
 
-              {/* NAME */}
+              {/* Nom */}
               <div>
-                <label className="text-sm font-medium">Nom complet</label>
+                <label className="text-sm font-bold text-gray-600">
+                  Nom complet
+                </label>
                 <div className="relative mt-1">
                   <User className="absolute left-3 top-3 text-gray-400" />
                   <input
                     required
                     placeholder="Menzan Abdoul"
-                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-green-400
-  focus:border-green-500
-  transition-all duration-200"
+                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all duration-200"
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
@@ -117,18 +124,18 @@ const Register: React.FC = () => {
                 </div>
               </div>
 
-              {/* EMAIL */}
+              {/* Email */}
               <div>
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-bold text-gray-600">
+                  Adresse email
+                </label>
                 <div className="relative mt-1">
                   <Mail className="absolute left-3 top-3 text-gray-400" />
                   <input
                     type="email"
                     placeholder="email@example.com"
                     required
-                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-green-400
-  focus:border-green-500
-  transition-all duration-200"
+                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all duration-200"
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
@@ -136,36 +143,52 @@ const Register: React.FC = () => {
                 </div>
               </div>
 
-              {/* PASSWORD */}
+              {/* Mot de passe */}
               <div>
-                <label className="text-sm font-medium">Mot de passe</label>
+                <label className="text-sm font-bold text-gray-600">
+                  Mot de passe
+                </label>
                 <div className="relative mt-1">
-                  <Lock className="absolute left-3 top-3 text-gray-400" />
+                  <Lock className="absolute left-3 top-3.5 text-gray-400" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-green-400
-  focus:border-green-500
-  transition-all duration-200"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all duration-200"
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
                   />
+                  <button
+                    type="button"
+                    aria-label={
+                      showPassword
+                        ? "Masquer le mot de passe"
+                        : "Afficher le mot de passe"
+                    }
+                    className="absolute right-3 top-3.5 z-10 text-gray-400 hover:text-gray-600 transition-colors"
+                    onClick={() => setShowPassword((v) => !v)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700"
+                className="w-full py-3 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition-colors"
               >
                 {loading ? "Création..." : "Créer un compte"}
               </button>
 
-              <p className="text-center text-sm">
+              <p className="text-center font-bold text-sm text-gray-600">
                 Déjà inscrit ?{" "}
-                <Link to="/login" className="text-green-600 font-medium">
+                <Link to="/login" className="text-orange-600 font-medium">
                   Se connecter
                 </Link>
               </p>
@@ -173,17 +196,17 @@ const Register: React.FC = () => {
           </div>
         </div>
 
-        {/* IMAGE  */}
-        <div className="w-1/2 relative hidden lg:block">
+        {/* Droite : Image */}
+        <div className="flex-1 relative hidden lg:block">
           <img
             src="/image/serviceRegister.jpg"
             alt="Service"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover shadow-lg"
           />
-          <div className="absolute inset-0 bg-green-900/20"></div>
         </div>
       </div>
     </div>
   );
 };
+
 export default Register;
