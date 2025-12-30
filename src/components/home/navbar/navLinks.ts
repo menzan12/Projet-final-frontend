@@ -1,18 +1,17 @@
-import { Home, Briefcase, Users, Settings } from "lucide-react";
+import { Home, Settings, Users } from "lucide-react";
 
 export const navLinksByRole = {
-
-
-  client: [
-    { name: "Dashboard", path: "/client-dashboard", icon: Home },
+  admin: [
+    { name: "Dashboard", path: "/admin", icon: Home },
+    { name: "Gestion Users", path: "/admin/users", icon: Users },
+    { name: "Paramètres", path: "/admin/settings", icon: Settings },
   ],
   vendor: [
-    { name: "Dashboard", path: "/vendor-dashboard", icon: Home },
-    { name: "Mes services", path: "/vendor/services", icon: Briefcase },
+    { name: "Mes Services", path: "/vendor/services", icon: Home },
+    { name: "Ajouter Service", path: "/vendor/add-service", icon: Settings },
   ],
-  admin: [
-    { name: "Admin", path: "/admin", icon: Home },
-    { name: "Utilisateurs", path: "/admin/users", icon: Users },
-    { name: "Paramètres", path: "/admin/settings", icon: Settings },
+  client: [
+    { name: "Mes Réservations", path: "/client/bookings", icon: Home },
+    { name: "Profil", path: "/client/profile", icon: Settings },
   ],
 };

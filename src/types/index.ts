@@ -21,3 +21,15 @@ export interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+
+export interface Service {
+ _id: string;
+  title: string;
+  description: string;
+  category: string;
+  price: number;
+  image: string;
+  provider: string;
+  city: string;
+  rating: number;
+}
