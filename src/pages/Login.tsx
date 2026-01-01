@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,17 +19,32 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      // 1. Appel au service login (doit retourner l'utilisateur avec son rôle)
+      const loggedUser = await login(email, password);
 
-      const routes: Record<string, string> = {
+      // 2. Vérification de sécurité pour éviter les crashs
+      if (!loggedUser) {
+        throw new Error(
+          "Impossible de récupérer les informations de l'utilisateur."
+        );
+      }
+
+      // 3. Mapping des redirections par rôle
+      const roleRoutes: Record<string, string> = {
         admin: "/admin",
         vendor: "/vendor",
         client: "/",
       };
 
-      navigate(routes[user?.role ?? "client"]);
+      // 4. Redirection vers la route correspondante ou l'accueil par défaut
+      const targetPath = roleRoutes[loggedUser.role] || "/";
+      navigate(targetPath);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Identifiants incorrects");
+      console.error("Erreur de connexion:", err);
+      setError(
+        err.response?.data?.message ||
+          "Identifiants incorrects ou problème de serveur."
+      );
     } finally {
       setLoading(false);
     }
@@ -37,41 +52,40 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-blue-100">
-      {/* Partie gauche : Fond bleu + card */}
+      {/* Partie gauche : Formulaire */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-blue-200">
         <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-8">
-          {/* Logo */}
+          {/* Logo et Header */}
           <div>
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center">
-                <img src="/image/Logo.png" alt="Image Logo" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
+                <img
+                  src="/image/Logo.png"
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <span
-                className="hidden sm:block text-xl font-bold 
-                   bg-gradient-to-r from-blue-600 to-orange-500 
-                   bg-clip-text text-transparent"
-              >
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                 SkillMarket
               </span>
             </div>
 
             <h2 className="text-3xl font-bold text-gray-900">Bienvenue</h2>
-            <p className="text-sm font-bold text-gray-600 mt-2">
+            <p className="text-sm font-medium text-gray-600 mt-2">
               Connectez-vous pour accéder à votre compte
             </p>
           </div>
 
-          {/* Alert d'erreur */}
+          {/* Affichage de l'erreur */}
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg flex gap-3 animate-in fade-in duration-300">
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg flex gap-3 animate-pulse">
               <AlertCircle className="text-red-500 shrink-0" />
               <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
-          {/* Formulaire */}
+          {/* Formulaire de connexion */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Adresse email
@@ -89,7 +103,6 @@ const Login: React.FC = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Mot de passe
@@ -118,11 +131,10 @@ const Login: React.FC = () => {
               </div>
             </div>
 
-            {/* Bouton */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-300 flex items-center justify-center"
+              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-300 flex items-center justify-center shadow-md active:scale-95"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -134,7 +146,7 @@ const Login: React.FC = () => {
               )}
             </button>
 
-            <p className="text-center font-bold text-sm text-gray-600">
+            <p className="text-center text-sm text-gray-600">
               Pas encore de compte ?{" "}
               <Link
                 to="/register"
@@ -147,20 +159,20 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Partie droite : Visuel */}
+      {/* Partie droite : Visuel (Masqué sur mobile) */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
         <img
           src="/image/serviceLogin.jpg"
-          alt="Service"
+          alt="Service Illustration"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 bg-black/40 shadow-inner"></div>
         <div className="relative z-10 flex items-center justify-center p-12 text-white">
-          <div className="max-w-md text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
+          <div className="max-w-md">
+            <h2 className="text-4xl font-bold leading-tight">
               Trouvez & proposez des services en toute simplicité
             </h2>
-            <p className="mt-6 font-bold text-base sm:text-lg text-white/90">
+            <p className="mt-6 text-lg text-white/90">
               Rejoignez notre communauté de professionnels et développez votre
               activité dès aujourd’hui.
             </p>

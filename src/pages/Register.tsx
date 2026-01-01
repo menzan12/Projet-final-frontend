@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { Briefcase, Eye, EyeOff, Lock, Mail, Search, User } from "lucide-react";
+import {
+  Briefcase,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Search,
+  User,
+  ShieldCheck,
+} from "lucide-react";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +18,7 @@ const Register: React.FC = () => {
     email: "",
     password: "",
     role: "client",
+    adminSecret: "", // Ajout du champ secret
   });
 
   const [message, setMessage] = useState("");
@@ -38,21 +48,16 @@ const Register: React.FC = () => {
 
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-orange-100 overflow-hidden">
-      {/* Card principale */}
       <div className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row">
         {/* Gauche : Formulaire */}
-        <div className="flex-1 flex items-center justify-center p-8">
+        <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto max-h-screen">
           <div className="w-full max-w-md space-y-6">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10  rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center">
                 <img src="/image/Logo.png" alt="Image Logo" />
               </div>
-              <span
-                className="hidden sm:block text-xl font-bold 
-                   bg-gradient-to-r from-blue-600 to-orange-500 
-                   bg-clip-text text-transparent"
-              >
+              <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                 SkillMarket
               </span>
             </div>
@@ -72,36 +77,49 @@ const Register: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Rôle */}
+              {/* Rôles - Ajout de la grille à 3 colonnes pour inclure Admin */}
               <div>
-                <p className="text-xs uppercase font-bold text-gray-500 mb-3">
-                  Je souhaite
+                <p className="text-xs uppercase font-bold text-gray-500 mb-3 text-center sm:text-left">
+                  Type de compte
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, role: "client" })}
-                    className={`flex items-center gap-2 p-3 rounded-lg border-2 ${
+                    className={`flex items-center justify-center gap-1 p-2 rounded-lg border-2 text-xs font-bold transition-all ${
                       formData.role === "client"
                         ? "border-orange-600 bg-blue-50 text-orange-600"
                         : "border-gray-200 text-gray-600"
                     }`}
                   >
-                    <Search className="w-4 h-4 font-bold" />
-                    Trouver un service
+                    <Search className="w-3 h-3" />
+                    Client
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, role: "vendor" })}
-                    className={`flex items-center gap-2 p-3 rounded-lg border-2 ${
+                    className={`flex items-center justify-center gap-1 p-2 rounded-lg border-2 text-xs font-bold transition-all ${
                       formData.role === "vendor"
                         ? "border-orange-600 bg-blue-50 text-orange-600"
                         : "border-gray-200 text-gray-600"
                     }`}
                   >
-                    <Briefcase className="w-4 h-4 font-bold" />
-                    Proposer mes services
+                    <Briefcase className="w-3 h-3" />
+                    Vendor
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, role: "admin" })}
+                    className={`flex items-center justify-center gap-1 p-2 rounded-lg border-2 text-xs font-bold transition-all ${
+                      formData.role === "admin"
+                        ? "border-red-600 bg-red-50 text-red-600"
+                        : "border-gray-200 text-gray-600"
+                    }`}
+                  >
+                    <ShieldCheck className="w-3 h-3" />
+                    Admin
                   </button>
                 </div>
               </div>
@@ -116,7 +134,7 @@ const Register: React.FC = () => {
                   <input
                     required
                     placeholder="Menzan Abdoul"
-                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all duration-200"
+                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 transition-all"
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
@@ -135,13 +153,37 @@ const Register: React.FC = () => {
                     type="email"
                     placeholder="email@example.com"
                     required
-                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all duration-200"
+                    className="w-full pl-10 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 transition-all"
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
                   />
                 </div>
               </div>
+
+              {/* Champ Secret Admin - Affiché uniquement si le rôle admin est sélectionné */}
+              {formData.role === "admin" && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <label className="text-sm font-bold text-red-600 italic">
+                    Code secret Administrateur
+                  </label>
+                  <div className="relative mt-1">
+                    <ShieldCheck className="absolute left-3 top-3 text-red-400" />
+                    <input
+                      type="password"
+                      placeholder="Entrez le code de sécurité"
+                      required
+                      className="w-full pl-10 py-3 border border-red-300 bg-red-50 rounded-lg outline-none focus:ring-2 focus:ring-red-400 transition-all"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          adminSecret: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Mot de passe */}
               <div>
@@ -154,19 +196,14 @@ const Register: React.FC = () => {
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-10 pr-12 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all duration-200"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-400 rounded-lg outline-none focus:ring-2 focus:ring-orange-400 transition-all"
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
                   />
                   <button
                     type="button"
-                    aria-label={
-                      showPassword
-                        ? "Masquer le mot de passe"
-                        : "Afficher le mot de passe"
-                    }
-                    className="absolute right-3 top-3.5 z-10 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
                     onClick={() => setShowPassword((v) => !v)}
                   >
                     {showPassword ? (
@@ -181,7 +218,11 @@ const Register: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition-colors"
+                className={`w-full py-3 text-white rounded-lg font-bold transition-colors ${
+                  formData.role === "admin"
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-orange-600 hover:bg-orange-700"
+                }`}
               >
                 {loading ? "Création..." : "Créer un compte"}
               </button>

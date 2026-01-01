@@ -84,12 +84,12 @@ const UserMenu = ({ user, onLogout }: Props) => {
             )}
 
             <Link
-              to="/profile"
+              to="/ClientDash"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
             >
               <UserIcon className="w-4 h-4" />
-              Mon Profil
+              Tableau de bord
             </Link>
 
             <button

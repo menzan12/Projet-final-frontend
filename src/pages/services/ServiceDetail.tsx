@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   Star,
   CheckCircle2,
@@ -7,34 +7,25 @@ import {
   Users,
   Calendar,
   MapPin,
-  ChevronRight,
   ShieldCheck,
   MessageCircle,
 } from "lucide-react";
-import api from "../api/axios";
-import Navbar from "../components/Navbar";
-
-// Interface pour typer les données du service
-interface Service {
-  _id: string;
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  rating: number;
-  vendor: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-}
+import api from "../../api/axios";
+import Navbar from "../../components/Navbar";
+import type { Service } from "../../types";
+import { useAuth } from "../../hooks/useAuth";
+import Breadcrumbs from "../../components/ServiceBooking/Breadcrumbs";
 
 export default function ServiceDetail() {
+  const navigate = useNavigate();
   const { id } = useParams();
+
+  const { user } = useAuth(); // Vérifie si l'utilisateur est connecté
+  const isLoggedIn = !!user;
+
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn] = useState(false); // À remplacer par votre logique d'auth (ex: useAuth)
+  const [postalCode, setPostalCode] = useState("");
 
   useEffect(() => {
     const fetchService = async () => {
@@ -52,12 +43,10 @@ export default function ServiceDetail() {
 
   const handleReservation = () => {
     if (!isLoggedIn) {
-      // Déclenche le modal DaisyUI si l'utilisateur n'est pas connecté
       const modal = document.getElementById("auth_modal") as HTMLDialogElement;
       modal?.showModal();
     } else {
-      // Logique pour passer à l'étape suivante (paiement/confirmation)
-      alert("Redirection vers la page de réservation...");
+      navigate(`/services/${id}/book?postalCode=${postalCode}`);
     }
   };
 
@@ -124,20 +113,7 @@ export default function ServiceDetail() {
 
       <main className="max-w-7xl mx-auto px-6 pt-8 pb-20">
         {/* Breadcrumbs */}
-        <nav className="text-sm flex items-center gap-2 text-gray-400 mb-6">
-          <Link to="/" className="hover:text-primary transition-colors">
-            Accueil
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to="/services" className="hover:text-primary transition-colors">
-            Services de {service.category}
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-gray-900 font-medium truncate">
-            {service.title}
-          </span>
-        </nav>
-
+        <Breadcrumbs service={service} />
         <div className="flex flex-col lg:flex-row gap-12">
           {/* --- COLONNE GAUCHE : DÉTAILS DU SERVICE --- */}
           <div className="lg:w-2/3">
@@ -158,7 +134,7 @@ export default function ServiceDetail() {
               {service.title}
             </h1>
 
-            {/* Galerie de Photos Style ServicePro */}
+            {/* Galerie dynamique */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 h-[500px] mb-12">
               <div className="md:col-span-8 overflow-hidden rounded-[2rem] border border-gray-100 shadow-sm">
                 <img
@@ -168,23 +144,36 @@ export default function ServiceDetail() {
                 />
               </div>
               <div className="md:col-span-4 grid grid-rows-2 gap-4">
-                <div className="overflow-hidden rounded-[2rem] border border-gray-100 shadow-sm">
-                  <img
-                    src="https://images.unsplash.com/photo-1581578731548-c64695cc6958?auto=format&fit=crop&q=80"
-                    className="w-full h-full object-cover"
-                    alt="Detail 1"
-                  />
-                </div>
-                <div className="relative overflow-hidden rounded-[2rem] border border-gray-100 shadow-sm group">
-                  <img
-                    src="https://images.unsplash.com/photo-1528453334238-0061330979a2?auto=format&fit=crop&q=80"
-                    className="w-full h-full object-cover brightness-50 group-hover:brightness-75 transition-all"
-                    alt="Detail 2"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center text-white font-bold cursor-pointer">
-                    Voir les 8 photos
+                {(
+                  service.images?.slice(0, 2) || [
+                    "https://images.unsplash.com/photo-1581578731548-c64695cc6958?auto=format&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1528453334238-0061330979a2?auto=format&fit=crop&q=80",
+                  ]
+                ).map((img: string, idx: number) => (
+                  <div
+                    key={idx}
+                    className={`${
+                      idx === 1
+                        ? "relative group overflow-hidden rounded-[2rem] border border-gray-100 shadow-sm"
+                        : "overflow-hidden rounded-[2rem] border border-gray-100 shadow-sm"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      className={`w-full h-full object-cover ${
+                        idx === 1
+                          ? "brightness-50 group-hover:brightness-75 transition-all"
+                          : ""
+                      }`}
+                      alt={`Detail ${idx + 1}`}
+                    />
+                    {idx === 1 && (
+                      <div className="absolute inset-0 flex items-center justify-center text-white font-bold cursor-pointer">
+                        Voir les 8 photos
+                      </div>
+                    )}
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -275,6 +264,8 @@ export default function ServiceDetail() {
                   <input
                     type="text"
                     placeholder="Votre code postal"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
                     className="w-full pl-12 pr-4 h-14 bg-gray-50 border-none rounded-2xl font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 transition-all outline-none"
                   />
                 </div>

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import type { Service } from "../types";
-import Navbar from "../components/Navbar";
-import api from "../api/axios";
-import ServicesFilters from "../components/servcices/ServicesFilters";
-import ServicesList from "../components/servcices/ServicesList";
+import type { Service } from "../../types";
+import Navbar from "../../components/Navbar";
+import api from "../../api/axios";
+import ServicesFilters from "../../components/servcices/ServicesFilters";
+import ServicesList from "../../components/servcices/ServicesList";
+import Breadcrumbs from "../../components/ServiceBooking/Breadcrumbs";
 
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
@@ -69,6 +70,7 @@ export default function Services() {
 
       <section className="py-12">
         <div className="max-w-[1400px] mx-auto px-6">
+          <Breadcrumbs />
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Sidebar Filters - On passe maintenant 'categories' */}
             <div className="lg:w-1/4">

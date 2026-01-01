@@ -25,11 +25,23 @@ export interface AuthContextType {
 export interface Service {
  _id: string;
   title: string;
+  vendor: {
+  name: string;
+};
   description: string;
   category: string;
   price: number;
-  image: string;
+  images?: string[];
   provider: string;
   city: string;
   rating: number;
+}
+
+ export interface BreadcrumbsProps {
+  service?: {
+    _id: string;
+    title?: string;
+    name?: string;
+    category?: string;
+  };
 }

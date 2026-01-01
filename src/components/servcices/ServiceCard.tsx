@@ -18,7 +18,7 @@ export default function ServiceCard({
       {/* Image Container */}
       <div className="relative h-48 w-full overflow-hidden">
         <img
-          src={service.image}
+          src={service.images?.[0]}
           alt={service.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
