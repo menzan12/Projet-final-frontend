@@ -29,6 +29,7 @@ export default function ServiceDetail() {
 
   useEffect(() => {
     const fetchService = async () => {
+      if (!id || id === ":id") return;
       try {
         const { data } = await api.get(`/services/${id}`);
         setService(data);
@@ -138,7 +139,7 @@ export default function ServiceDetail() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 h-[500px] mb-12">
               <div className="md:col-span-8 overflow-hidden rounded-[2rem] border border-gray-100 shadow-sm">
                 <img
-                  src={service.image}
+                  src={service.images?.[0]}
                   className="w-full h-full object-cover"
                   alt="Service"
                 />

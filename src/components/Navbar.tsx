@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Logo from "./home/navbar/Logo";
-import DesktopNavLinks from "./home/navbar/DesktopNavLinks";
 import MobileMenu from "./home/navbar/MobileMenu";
 import UserMenu from "./home/navbar/UserMenu";
 import { useAuth } from "../hooks/useAuth";
@@ -62,9 +61,6 @@ const Navbar = () => {
             Contact
           </Link>
         </div>
-
-        {/* Desktop nav par rôle */}
-        <DesktopNavLinks user={user} isAuthenticated={isAuthenticated} />
 
         {/* Auth desktop */}
         <div className="hidden md:flex gap-4">

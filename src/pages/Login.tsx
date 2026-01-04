@@ -1,43 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { AlertCircle, Lock, Mail, Eye, EyeOff } from "lucide-react";
 
 const Login: React.FC = () => {
+  // --- États (States) ---
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { login } = useAuth();
+  // --- Hooks ---
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
+  // --- Configuration des redirections ---
+  const roleRoutes: Record<string, string> = {
+    admin: "/admin",
+    vendor: "/vendorDash",
+    client: "/",
+  };
+
+  /**
+   * 1. Redirection automatique si l'utilisateur est déjà connecté.
+   * Cela évite qu'un vendeur connecté puisse revenir sur la page Login.
+   */
+  useEffect(() => {
+    if (user) {
+      const target = roleRoutes[user.role] || "/";
+      navigate(target);
+    }
+  }, [user, navigate]);
+
+  /**
+   * 2. Gestion de la soumission du formulaire
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // 1. Appel au service login (doit retourner l'utilisateur avec son rôle)
+      // Appel au service de connexion
       const loggedUser = await login(email, password);
 
-      // 2. Vérification de sécurité pour éviter les crashs
       if (!loggedUser) {
         throw new Error(
           "Impossible de récupérer les informations de l'utilisateur."
         );
       }
 
-      // 3. Mapping des redirections par rôle
-      const roleRoutes: Record<string, string> = {
-        admin: "/admin",
-        vendor: "/vendor",
-        client: "/",
-      };
-
-      // 4. Redirection vers la route correspondante ou l'accueil par défaut
+      // Redirection immédiate après succès
       const targetPath = roleRoutes[loggedUser.role] || "/";
+      console.log(
+        `Connexion réussie (${loggedUser.role}). Direction : ${targetPath}`
+      );
       navigate(targetPath);
     } catch (err: any) {
       console.error("Erreur de connexion:", err);
@@ -52,7 +70,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-blue-100">
-      {/* Partie gauche : Formulaire */}
+      {/* --- PARTIE GAUCHE : Formulaire --- */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-blue-200">
         <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-8">
           {/* Logo et Header */}
@@ -84,8 +102,9 @@ const Login: React.FC = () => {
             </div>
           )}
 
-          {/* Formulaire de connexion */}
+          {/* Formulaire */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Champ Email */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Adresse email
@@ -103,6 +122,7 @@ const Login: React.FC = () => {
               </div>
             </div>
 
+            {/* Champ Mot de passe */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Mot de passe
@@ -131,6 +151,7 @@ const Login: React.FC = () => {
               </div>
             </div>
 
+            {/* Bouton de Connexion */}
             <button
               type="submit"
               disabled={loading}
@@ -159,7 +180,7 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Partie droite : Visuel (Masqué sur mobile) */}
+      {/* --- PARTIE DROITE : Visuel --- */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
         <img
           src="/image/serviceLogin.jpg"

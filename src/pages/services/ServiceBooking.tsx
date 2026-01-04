@@ -149,7 +149,7 @@ const ServiceBooking: React.FC = () => {
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <h3 className="text-lg font-black text-slate-800 tracking-tight">
-                    Jeudi 1er octobre {selectedDate?.toLocaleDateString()}th
+                    {selectedDate?.toLocaleDateString()}th
                   </h3>
                   <span className="text-xs text-slate-400 font-medium tracking-tight">
                     Fuseau horaire : Europe/Paris (CET)

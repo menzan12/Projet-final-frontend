@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function SidebarLink({
+function ClientSide({
   icon,
   label,
   to,
@@ -32,4 +32,4 @@ function SidebarLink({
   );
 }
 
-export default SidebarLink;
+export default ClientSide;

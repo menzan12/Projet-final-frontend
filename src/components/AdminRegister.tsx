@@ -13,10 +13,8 @@ export default function AdminRegister() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        formData
-      );
+      await axios.post("http://localhost:5000/api/auth/register", formData);
+
       alert("Admin créé avec succès ! Vérifiez vos emails.");
     } catch (error: any) {
       alert(error.response?.data?.message || "Erreur lors de l'inscription");

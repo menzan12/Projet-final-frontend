@@ -8,20 +8,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Vérification de la session (F5)
   useEffect(() => {
-    const checkAuth = async () => {
+    const initAuth = async () => {
       try {
+        // Axios envoie le cookie automatiquement ici grâce à withCredentials
         const res = await api.get("/auth/me");
-        setUser(res.data);
-      } catch {
-        setUser(null);
+        setUser(res.data); // On récupère l'utilisateur si le cookie est valide
+      } catch (error) {
+        setUser(null); // Session expirée ou pas de cookie
       } finally {
         setLoading(false);
       }
     };
-
-    checkAuth();
+    initAuth();
   }, []);
 
   const login = async (email: string, password: string): Promise<User> => {

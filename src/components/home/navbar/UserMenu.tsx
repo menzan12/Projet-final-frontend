@@ -5,6 +5,7 @@ import {
   User as UserIcon,
   LayoutDashboard,
   ChevronDown,
+  Store, // Import de l'icône Store pour le vendeur
 } from "lucide-react";
 import type { User } from "../../../types";
 
@@ -72,6 +73,7 @@ const UserMenu = ({ user, onLogout }: Props) => {
           </div>
 
           <div className="p-1 space-y-1">
+            {/* 1. LIEN ADMIN */}
             {user.role === "admin" && (
               <Link
                 to="/admin"
@@ -79,19 +81,35 @@ const UserMenu = ({ user, onLogout }: Props) => {
                 className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
               >
                 <LayoutDashboard className="w-4 h-4" />
-                Tableau de bord
+                Tableau de bord Admin
               </Link>
             )}
 
+            {/* 2. LIEN VENDOR (Modifié pour pointer vers /vendorDash) */}
+            {user.role === "vendor" && (
+              <Link
+                to="/vendorDash"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors"
+              >
+                <Store className="w-4 h-4" />
+                Tableau de bord Vendeur
+              </Link>
+            )}
+
+            {/* 3. LIEN CLIENT (Visible pour les clients ou vendeurs qui veulent voir leurs achats) */}
             <Link
               to="/ClientDash"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
             >
               <UserIcon className="w-4 h-4" />
-              Tableau de bord
+              Mes Commandes
             </Link>
 
+            <div className="border-t border-gray-50 my-1"></div>
+
+            {/* DECONNEXION */}
             <button
               onClick={() => {
                 setIsOpen(false);

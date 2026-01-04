@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { navLinksByRole } from "./navLinks";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 import type { User } from "../../../types";
@@ -49,18 +48,6 @@ const MobileMenu = ({ user, isAuthenticated, closeMenu }: Props) => {
         {/* Liens selon rôle */}
         {isAuthenticated && user && (
           <>
-            {navLinksByRole[user.role].map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={closeMenu}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                {link.icon && <link.icon className="w-5 h-5" />}
-                {link.name}
-              </Link>
-            ))}
-
             <div className="pt-4 mt-4 border-t border-gray-200">
               <button
                 onClick={() => {

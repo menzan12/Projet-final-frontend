@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { AdminRoute } from "./components/AdminRoute"; // Import de la protection
 
@@ -16,10 +16,13 @@ import ServiceDetail from "./pages/services/ServiceDetail";
 import AIChat from "./components/AIChat";
 import AdminDashboard from "./pages/Dashboard/AdminDash";
 import ServiceBooking from "./pages/services/ServiceBooking";
-import DashboardClient from "./pages/Dashboard/ClientDash";
 
 import MyBookings from "./pages/MyBookings";
 import Profile from "./pages/profile";
+import Chat from "./pages/Chat";
+import ClientDash from "./pages/Dashboard/ClientDash";
+import VendorDash from "./pages/Dashboard/VendorDash";
+import VendorService from "./pages/VendorService";
 
 function App() {
   return (
@@ -34,8 +37,16 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/services/:id" element={<ServiceDetail />} />
           <Route path="/services/:id/book" element={<ServiceBooking />} />
-          <Route path="/ClientDash" element={<DashboardClient />} />
+          <Route path="/ClientDash" element={<ClientDash />} />
+          <Route path="/vendorDash" element={<VendorDash />} />
+          <Route path="/vendorService" element={<VendorService />} />
+
+          <Route
+            path="/vendor"
+            element={<Navigate to="/vendorDash" replace />}
+          />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/chat/:bookingId" element={<Chat />} />
           <Route path="/bookings" element={<MyBookings />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
