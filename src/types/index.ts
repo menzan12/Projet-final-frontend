@@ -36,6 +36,7 @@ export interface Service {
   provider: string;
   city: string;
   rating: number;
+  status: BookingStatus;
 }
 
  export interface BreadcrumbsProps {
@@ -50,6 +51,7 @@ export interface Service {
 export type BookingStatus = "pending"| "confirmed" | "cancelled" | "completed";
 export interface Booking {
   _id: string;
+  email?: string;
   bookingDate: string;
   status: BookingStatus;
   totalPrice: number;
@@ -69,6 +71,7 @@ export interface Booking {
   };
  createdAt: string;
 }
+
 
 export interface Message {
   _id: string;
@@ -93,4 +96,5 @@ export interface VendorStats {
   revenueGrowth: number;
   pendingServices: number;
 }
+
 

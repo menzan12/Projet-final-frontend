@@ -5,7 +5,7 @@ import {
   User as UserIcon,
   LayoutDashboard,
   ChevronDown,
-  Store, // Import de l'icône Store pour le vendeur
+  Store,
 } from "lucide-react";
 import type { User } from "../../../types";
 
@@ -18,7 +18,7 @@ const UserMenu = ({ user, onLogout }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fermer le menu si on clique en dehors
+  // Fermer le menu si clic en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -31,91 +31,89 @@ const UserMenu = ({ user, onLogout }: Props) => {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* BOUTON DECLENCHEUR */}
+      {/* BOUTON */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200"
+        className="flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gradient-to-r hover:from-blue-500 hover:to-orange-500 transition-all duration-300"
       >
-        <div className="relative">
-          <img
-            src={
-              user.avatar ||
-              `https://ui-avatars.com/api/?name=${user.name}&background=0D8ABC&color=fff`
-            }
-            className="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm"
-            alt={user.name}
-          />
-          <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
-        </div>
-        <div className="hidden sm:flex flex-col items-start leading-tight">
-          <span className="text-sm font-bold text-gray-900">{user.name}</span>
-          <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter">
+        <img
+          src={
+            user.avatar ||
+            `https://ui-avatars.com/api/?name=${user.name}&background=0D8ABC&color=fff`
+          }
+          className="w-9 h-9 rounded-full object-cover ring-2 ring-orange-400"
+          alt={user.name}
+        />
+
+        <div className="hidden sm:flex flex-col items-start">
+          <span className="text-sm font-bold text-gray-800">{user.name}</span>
+          <span className="text-[10px] font-bold uppercase bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
             {user.role}
           </span>
         </div>
+
         <ChevronDown
-          className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
+          className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
-      {/* MENU DEROULANT */}
+      {/* MENU */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 duration-200 origin-top-right z-50">
-          <div className="px-4 py-3 border-b border-gray-50 mb-1">
-            <p className="text-xs font-bold text-orange-400 uppercase tracking-widest">
-              Compte
-            </p>
-            <p className="text-sm font-medium text-gray-600 truncate">
+        <div className="absolute right-0 mt-3 w-60 bg-white rounded-xl shadow-2xl z-50 animate-fadeIn">
+          <div className="px-4 py-3 border-b border-gray-200">
+            <p className="text-sm font-medium truncate text-gray-700">
               {user.email}
             </p>
           </div>
 
           <div className="p-1 space-y-1">
-            {/* 1. LIEN ADMIN */}
+            {/* ADMIN */}
             {user.role === "admin" && (
               <Link
                 to="/admin"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 transition-all"
               >
-                <LayoutDashboard className="w-4 h-4" />
-                Tableau de bord Admin
+                <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                <span className="text-gray-700">Admin Dashboard</span>
               </Link>
             )}
 
-            {/* 2. LIEN VENDOR (Modifié pour pointer vers /vendorDash) */}
+            {/* VENDOR */}
             {user.role === "vendor" && (
               <Link
                 to="/vendorDash"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition-colors"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-orange-50 hover:to-blue-50 transition-all"
               >
-                <Store className="w-4 h-4" />
-                Tableau de bord Vendeur
+                <Store className="w-4 h-4 text-orange-500" />
+                <span className="text-gray-700">Dashboard Vendeur</span>
               </Link>
             )}
 
-            {/* 3. LIEN CLIENT (Visible pour les clients ou vendeurs qui veulent voir leurs achats) */}
-            <Link
-              to="/ClientDash"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-colors"
-            >
-              <UserIcon className="w-4 h-4" />
-              Mes Commandes
-            </Link>
+            {/* CLIENT */}
+            {user.role === "client" && (
+              <Link
+                to="/ClientDash"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 transition-all"
+              >
+                <UserIcon className="w-4 h-4 text-blue-600" />
+                <span className="text-gray-700">Mes Commandes</span>
+              </Link>
+            )}
 
-            <div className="border-t border-gray-50 my-1"></div>
+            <div className="border-t border-gray-200 my-1"></div>
 
-            {/* DECONNEXION */}
+            {/* LOGOUT */}
             <button
               onClick={() => {
                 setIsOpen(false);
                 onLogout();
               }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
             >
               <LogOut className="w-4 h-4" />
               Déconnexion

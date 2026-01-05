@@ -3,7 +3,6 @@ import {
   Briefcase,
   Calendar,
   MessageSquare,
-  Settings,
   LogOut,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -81,7 +80,7 @@ export default function VendorSide() {
           </Link>
 
           <Link
-            to="/vendorDash/bookings"
+            to="/vendorBookings"
             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all
               ${
                 isActive("/vendorDash/bookings")
@@ -109,20 +108,6 @@ export default function VendorSide() {
           >
             <MessageSquare size={20} />
             <span className="text-sm font-medium">Messages</span>
-          </Link>
-
-          <Link
-            to="/vendorDash/settings"
-            className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all
-              ${
-                isActive("/vendorDash/settings")
-                  ? "bg-white/20 text-white shadow-md"
-                  : "text-white/80 hover:bg-white/10"
-              }
-            `}
-          >
-            <Settings size={20} />
-            <span className="text-sm font-medium">Paramètres</span>
           </Link>
         </nav>
       </div>

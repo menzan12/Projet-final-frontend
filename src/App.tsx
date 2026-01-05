@@ -23,6 +23,7 @@ import Chat from "./pages/Chat";
 import ClientDash from "./pages/Dashboard/ClientDash";
 import VendorDash from "./pages/Dashboard/VendorDash";
 import VendorService from "./pages/VendorService";
+import VendorBookings from "./pages/VendorBookings";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/ClientDash" element={<ClientDash />} />
           <Route path="/vendorDash" element={<VendorDash />} />
           <Route path="/vendorService" element={<VendorService />} />
+          <Route path="/vendorBookings" element={<VendorBookings />} />
 
           <Route
             path="/vendor"

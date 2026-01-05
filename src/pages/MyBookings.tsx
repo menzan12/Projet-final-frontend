@@ -30,9 +30,10 @@ export default function MyBookings() {
     const fetchBookings = async () => {
       try {
         const res = await api.get("/bookings/my");
+        console.log("DONNÉES DU BACKEND :", res.data); // <--- AJOUTE ÇA
         setBookings(res.data);
       } catch (error) {
-        console.error("Erreur récupération réservations", error);
+        console.error("Erreur API :", error);
       } finally {
         setLoading(false);
       }
