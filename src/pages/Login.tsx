@@ -1,67 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import { AlertCircle, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { useAuthStore } from "../stores/useAuthStore";
 
 const Login: React.FC = () => {
-  // --- États (States) ---
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  // --- Hooks ---
-  const { login, user } = useAuth();
+  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
 
-  // --- Configuration des redirections ---
-  const roleRoutes: Record<string, string> = {
-    admin: "/admin",
-    vendor: "/vendorDash",
-    client: "/",
-  };
-
-  /**
-   * 1. Redirection automatique si l'utilisateur est déjà connecté.
-   * Cela évite qu'un vendeur connecté puisse revenir sur la page Login.
-   */
-  useEffect(() => {
-    if (user) {
-      const target = roleRoutes[user.role] || "/";
-      navigate(target);
-    }
-  }, [user, navigate]);
-
-  /**
-   * 2. Gestion de la soumission du formulaire
-   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // Appel au service de connexion
-      const loggedUser = await login(email, password);
+      const user = await login({ email, password });
 
-      if (!loggedUser) {
-        throw new Error(
-          "Impossible de récupérer les informations de l'utilisateur."
-        );
-      }
-
-      // Redirection immédiate après succès
-      const targetPath = roleRoutes[loggedUser.role] || "/";
-      console.log(
-        `Connexion réussie (${loggedUser.role}). Direction : ${targetPath}`
-      );
-      navigate(targetPath);
+      if (user.role === "admin") navigate("/dashAdmin");
+      else if (user.role === "vendor") navigate("/profilVendor");
+      else navigate("/"); // Client
     } catch (err: any) {
-      console.error("Erreur de connexion:", err);
+      // MODIFICATION : Gestion plus robuste du message d'erreur
       setError(
         err.response?.data?.message ||
-          "Identifiants incorrects ou problème de serveur."
+          "Identifiants incorrects ou problème serveur."
       );
     } finally {
       setLoading(false);

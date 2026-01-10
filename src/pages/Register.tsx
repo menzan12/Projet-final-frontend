@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
 import {
   Briefcase,
   Eye,
@@ -11,38 +10,43 @@ import {
   User,
   ShieldCheck,
 } from "lucide-react";
+import { useAuthStore } from "../stores/useAuthStore";
+import type { UserRole } from "../types";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "client",
-    adminSecret: "", // Ajout du champ secret
+    role: "client" as UserRole,
+    adminSecret: "",
   });
 
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  // MODIFICATION : Utilisation du loading du store
+  const register = useAuthStore((state) => state.register);
+  const loading = useAuthStore((state) => state.loading);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setMessage("");
 
     try {
-      await api.post("/auth/register", formData);
+      // MODIFICATION : Appel de la fonction register du store Zustand
+      // On passe l'objet formData complet qui contient maintenant le rôle et potentiellement le secret
+      await register(formData as any);
+
       setMessage(
         "Inscription réussie ! Vérifie tes emails pour valider ton compte."
       );
+      // Redirection après un court délai pour laisser lire le message
       setTimeout(() => navigate("/login"), 3000);
     } catch (error: any) {
       setMessage(
         error.response?.data?.message || "Erreur lors de l'inscription"
       );
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -77,7 +81,7 @@ const Register: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Rôles - Ajout de la grille à 3 colonnes pour inclure Admin */}
+              {/* Rôles */}
               <div>
                 <p className="text-xs uppercase font-bold text-gray-500 mb-3 text-center sm:text-left">
                   Type de compte
@@ -161,7 +165,7 @@ const Register: React.FC = () => {
                 </div>
               </div>
 
-              {/* Champ Secret Admin - Affiché uniquement si le rôle admin est sélectionné */}
+              {/* Champ Secret Admin */}
               {formData.role === "admin" && (
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                   <label className="text-sm font-bold text-red-600 italic">
@@ -220,8 +224,8 @@ const Register: React.FC = () => {
                 disabled={loading}
                 className={`w-full py-3 text-white rounded-lg font-bold transition-colors ${
                   formData.role === "admin"
-                    ? "bg-red-600 hover:bg-red-700"
-                    : "bg-orange-600 hover:bg-orange-700"
+                    ? "bg-red-600 hover:bg-red-700 disabled:bg-red-300"
+                    : "bg-orange-600 hover:bg-orange-700 disabled:bg-orange-300"
                 }`}
               >
                 {loading ? "Création..." : "Créer un compte"}
@@ -229,7 +233,10 @@ const Register: React.FC = () => {
 
               <p className="text-center font-bold text-sm text-gray-600">
                 Déjà inscrit ?{" "}
-                <Link to="/login" className="text-orange-600 font-medium">
+                <Link
+                  to="/login"
+                  className="text-orange-600 font-medium hover:underline"
+                >
                   Se connecter
                 </Link>
               </p>

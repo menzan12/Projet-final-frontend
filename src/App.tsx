@@ -1,77 +1,176 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import { AdminRoute } from "./components/AdminRoute"; // Import de la protection
+import { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
+import { useAuthStore } from "./stores/useAuthStore";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Pages
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
-import Services from "./pages/services/Services";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import ServiceDetail from "./pages/services/ServiceDetail";
+import Home from "./Pages/Home";
+import Login from "./Pages/Login";
+import Register from "./Pages/Register";
+import NotFound from "./Pages/NotFound";
+import Services from "./Pages/Services/Service";
+import DashVendor from "./Pages/Vendor/dashVendor";
+import ProfilVendor from "./Pages/Vendor/ProfilVendor";
+import DashClient from "./Pages/Clients/dashClient";
+import Contact from "./Pages/Contact";
+import About from "./Pages/About";
+import DetailServices from "./Pages/Services/DetailServices";
+import Profil from "./Pages/Profil";
+import DashAdmin from "./Pages/Admin/dashAdmin";
+import UsersManagement from "./Pages/Admin/UsersManagement";
+import Subscriptions from "./Pages/Admin/Subscriptions";
+import Analytics from "./Pages/Admin/Analytics";
 
-// Composants
-import AIChat from "./components/AIChat";
-import AdminDashboard from "./pages/Dashboard/AdminDash";
-import ServiceBooking from "./pages/services/ServiceBooking";
+// --- COMPOSANT DE PROTECTION AVANCÉ ---
+const AuthGuard = ({ allowedRoles }: { allowedRoles?: string[] }) => {
+  const { user, loading } = useAuthStore();
+  const location = useLocation();
 
-import MyBookings from "./pages/MyBookings";
-import Profile from "./pages/profile";
-import Chat from "./pages/Chat";
-import ClientDash from "./pages/Dashboard/ClientDash";
-import VendorDash from "./pages/Dashboard/VendorDash";
-import VendorService from "./pages/VendorService";
-import VendorBookings from "./pages/VendorBookings";
+  if (loading) return null;
 
-function App() {
+  // 1. Si pas d'utilisateur connecté
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // 2. LOGIQUE VENDOR : Redirection forcée vers onboarding si profil incomplet
+  if (
+    user.role === "vendor" &&
+    !user.isProfileComplete &&
+    location.pathname !== "/profilVendor"
+  ) {
+    console.warn(
+      "[Guard] Profil Vendor incomplet. Redirection vers onboarding."
+    );
+    return <Navigate to="/profilVendor" replace />;
+  }
+
+  // 3. Protection par Rôle (ex: empêcher un client d'aller sur dashAdmin)
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    console.error("[Guard] Accès refusé : Rôle insuffisant.");
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+};
+
+const App = () => {
+  const { checkAuth, loading, user } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Écran de chargement global de l'application
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-blue-50 rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-t-blue-600 rounded-full animate-spin absolute top-0 left-0"></div>
+          </div>
+          <div className="text-center">
+            <p className="text-slate-900 font-black text-xl tracking-tight">
+              SkillMarket
+            </p>
+            <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] animate-pulse mt-1">
+              Initialisation sécurisée...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AIChat />
-        <Routes>
-          {/* Routes Publiques */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services/:id" element={<ServiceDetail />} />
-          <Route path="/services/:id/book" element={<ServiceBooking />} />
-          <Route path="/ClientDash" element={<ClientDash />} />
-          <Route path="/vendorDash" element={<VendorDash />} />
-          <Route path="/vendorService" element={<VendorService />} />
-          <Route path="/vendorBookings" element={<VendorBookings />} />
+      {/* Conteneur de notifications global */}
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
 
-          <Route
-            path="/vendor"
-            element={<Navigate to="/vendorDash" replace />}
-          />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/chat/:bookingId" element={<Chat />} />
-          <Route path="/bookings" element={<MyBookings />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+      <Routes>
+        {/* --- ROUTES PUBLIQUES --- */}
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/login"
+          element={
+            !user ? (
+              <Login />
+            ) : (
+              <Navigate
+                to={user.role === "admin" ? "/dashAdmin" : "/"}
+                replace
+              />
+            )
+          }
+        />
+        <Route path="/register" element={<Register />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/services/:id" element={<DetailServices />} />
 
-          {/* Route Admin Protégée */}
-          {/* On utilise /admin/* pour permettre au dashboard d'avoir 
-              ses propres sous-routes (ex: /admin/users, /admin/stats) 
-          */}
-          <Route
-            path="/admin/*"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
+        {/* --- ROUTES PRIVÉES (ACCESSIBLES PAR TOUS LES CONNECTÉS) --- */}
+        <Route
+          element={<AuthGuard allowedRoles={["client", "vendor", "admin"]} />}
+        >
+          <Route path="/dashClient" element={<DashClient />} />
+          <Route path="/profil" element={<Profil />} />
+        </Route>
 
-          {/* Fallback : 404 */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AuthProvider>
+        {/* --- ROUTES VENDEURS --- */}
+        <Route element={<AuthGuard allowedRoles={["vendor"]} />}>
+          <Route path="/dashVendor" element={<DashVendor />} />
+        </Route>
+
+        {/* --- ROUTES ADMIN --- */}
+        <Route element={<AuthGuard allowedRoles={["admin"]} />}>
+          <Route path="/dashAdmin" element={<DashAdmin />} />
+          <Route path="/dashAdmin/community" element={<UsersManagement />} />
+          <Route path="/dashAdmin/abonnement" element={<Subscriptions />} />
+          <Route path="/dashAdmin/graphiques" element={<Analytics />} />
+        </Route>
+
+        {/* --- ROUTE ONBOARDING VENDOR --- */}
+        <Route
+          path="/profilVendor"
+          element={
+            user && user.role === "vendor" ? (
+              user.isProfileComplete ? (
+                <Navigate to="/dashVendor" replace />
+              ) : (
+                <ProfilVendor />
+              )
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* --- 404 --- */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </BrowserRouter>
   );
-}
+};
 
 export default App;

@@ -1,3 +1,4 @@
+import { useState, type FormEvent } from "react";
 import {
   ArrowRight,
   Mail,
@@ -9,15 +10,29 @@ import {
   MessageCircle,
   HelpCircle,
 } from "lucide-react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    // Logique d'envoi (API call) ici
+    console.log("Données envoyées :", formData);
+    alert("Merci ! Votre message a bien été envoyé.");
+  };
+
   return (
     <>
       <Navbar />
-      <div className="bg-white">
-        {/* HERO SECTION - Plus immersive */}
+      <div className="bg-white min-h-screen">
+        {/* HERO SECTION */}
         <section className="relative py-24 bg-blue-600 overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-white rounded-full blur-3xl"></div>
@@ -25,7 +40,7 @@ export default function Contact() {
           </div>
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center relative z-10">
-            <h1 className="text-4xl lg:text-6xl font-black mb-6 text-white">
+            <h1 className="text-4xl lg:text-6xl font-black mb-6 text-white leading-tight">
               Parlons de votre <br />
               <span className="text-orange-400">prochain projet</span>
             </h1>
@@ -37,9 +52,10 @@ export default function Contact() {
         </section>
 
         {/* CARTES DE CONTACT RAPIDE */}
-        <section className="-mt-12 relative z-20 pb-16">
-          <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-6">
-            <div className="p-8 rounded-3xl shadow-xl bg-white border border-gray-100 text-center group hover:border-blue-500 transition-all">
+        <section className="-mt-12 relative z-20 px-6">
+          <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
+            {/* Email */}
+            <div className="p-8 rounded-3xl shadow-xl bg-white border border-gray-100 text-center group hover:border-blue-500 transition-all duration-300">
               <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <Mail className="h-7 w-7 text-blue-600" />
               </div>
@@ -47,13 +63,14 @@ export default function Contact() {
               <p className="text-gray-500 mb-4 text-sm">Réponse sous 2h</p>
               <a
                 href="mailto:contact@skillmarket.com"
-                className="text-blue-600 font-bold hover:underline"
+                className="text-blue-600 font-bold hover:underline break-all"
               >
                 contact@skillmarket.com
               </a>
             </div>
 
-            <div className="p-8 rounded-3xl shadow-xl bg-white border border-gray-100 text-center group hover:border-orange-500 transition-all">
+            {/* Téléphone */}
+            <div className="p-8 rounded-3xl shadow-xl bg-white border border-gray-100 text-center group hover:border-orange-500 transition-all duration-300">
               <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <Phone className="h-7 w-7 text-orange-600" />
               </div>
@@ -67,13 +84,19 @@ export default function Contact() {
               </a>
             </div>
 
-            <div className="p-8 rounded-3xl shadow-xl bg-white border border-gray-100 text-center group hover:border-green-500 transition-all">
+            {/* WhatsApp */}
+            <div className="p-8 rounded-3xl shadow-xl bg-white border border-gray-100 text-center group hover:border-green-500 transition-all duration-300">
               <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                 <MessageCircle className="h-7 w-7 text-green-600" />
               </div>
               <h4 className="text-xl font-bold mb-2">WhatsApp</h4>
               <p className="text-gray-500 mb-4 text-sm">Support instantané</p>
-              <a href="#" className="text-green-600 font-bold hover:underline">
+              <a
+                href="https://wa.me/2250503131076?text=Bonjour%20SkillMarket,%20j'aimerais%20avoir des%20informations"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-600 font-bold hover:underline"
+              >
                 Lancer le chat
               </a>
             </div>
@@ -92,42 +115,61 @@ export default function Contact() {
                 contactera personnellement.
               </p>
 
-              <form className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <input
+                    required
                     type="text"
                     placeholder="Nom complet"
-                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-600 outline-none transition-all"
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                   />
                   <input
+                    required
                     type="email"
                     placeholder="Email professionnel"
-                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                    className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-600 outline-none transition-all"
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                   />
                 </div>
                 <input
                   type="text"
                   placeholder="Sujet de votre demande"
-                  className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                  className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-600 outline-none transition-all"
+                  onChange={(e) =>
+                    setFormData({ ...formData, subject: e.target.value })
+                  }
                 />
                 <textarea
+                  required
                   rows={5}
                   placeholder="Comment pouvons-nous vous aider ?"
-                  className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-600 outline-none transition-all"
+                  className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-600 outline-none transition-all resize-none"
+                  onChange={(e) =>
+                    setFormData({ ...formData, message: e.target.value })
+                  }
                 ></textarea>
-                <button className="w-full py-4 rounded-2xl font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                <button
+                  type="submit"
+                  className="w-full py-4 rounded-2xl font-bold bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 active:scale-95"
+                >
                   Envoyer le message <ArrowRight className="h-5 w-5" />
                 </button>
               </form>
             </div>
 
             <div className="space-y-8">
-              {/* Fake Map / Image de localisation */}
-              <div className="h-80 w-full rounded-[2.5rem] bg-gray-200 relative overflow-hidden shadow-inner">
+              {/* Fake Map */}
+              <div className="h-80 w-full rounded-[2.5rem] bg-gray-200 relative overflow-hidden shadow-inner group">
                 <img
                   src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80"
-                  className="w-full h-full object-cover opacity-80"
-                  alt="Map"
+                  className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
+                  alt="Localisation SkillMarket"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-white p-4 rounded-2xl shadow-2xl flex items-center gap-3">
@@ -150,13 +192,19 @@ export default function Contact() {
                   Suivez-nous sur les réseaux
                 </h4>
                 <div className="flex gap-4">
-                  {[Linkedin, Twitter, Instagram].map((Icon, idx) => (
+                  {[
+                    { Icon: Linkedin, href: "#" },
+                    { Icon: Twitter, href: "#" },
+                    { Icon: Instagram, href: "#" },
+                  ].map((item, idx) => (
                     <a
                       key={idx}
-                      href="#"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-600 transition-all shadow-sm"
                     >
-                      <Icon className="h-5 w-5" />
+                      <item.Icon className="h-5 w-5" />
                     </a>
                   ))}
                 </div>
@@ -165,7 +213,7 @@ export default function Contact() {
           </div>
         </section>
 
-        {/* NOUVELLE SECTION : FAQ RAPIDE */}
+        {/* FAQ RAPIDE */}
         <section className="py-20 bg-gray-50">
           <div className="max-w-4xl mx-auto px-6">
             <div className="text-center mb-12">
@@ -181,24 +229,24 @@ export default function Contact() {
               {[
                 {
                   q: "Comment devenir prestataire ?",
-                  a: "Inscrivez-vous via l'onglet 'Devenir prestataire' et soumettez vos documents.",
+                  a: "Inscrivez-vous via l'onglet 'Devenir prestataire' et soumettez vos documents d'identité et de certification pour vérification.",
                 },
                 {
                   q: "Quels sont les délais de paiement ?",
-                  a: "Les virements sont effectués 48h après la validation de la mission.",
+                  a: "Les fonds sont débloqués et transférés sur votre compte 48h après la validation finale de la mission par le client.",
                 },
                 {
                   q: "Comment annuler une mission ?",
-                  a: "L'annulation est gratuite jusqu'à 24h avant le début de la prestation.",
+                  a: "Vous pouvez annuler via votre tableau de bord. L'annulation est gratuite jusqu'à 24h avant le début de la prestation.",
                 },
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="collapse collapse-plus bg-white rounded-2xl border border-gray-100"
+                  className="collapse collapse-plus bg-white rounded-2xl border border-gray-100 shadow-sm"
                 >
                   <input
                     type="radio"
-                    name="my-accordion-3"
+                    name="faq-accordion"
                     defaultChecked={i === 0}
                   />
                   <div className="collapse-title text-lg font-bold text-gray-800">

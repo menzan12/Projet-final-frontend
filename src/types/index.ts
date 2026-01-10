@@ -1,4 +1,5 @@
 export type UserRole = "client" | "vendor" | "admin";
+export type VendorPlan = "free" | "pro" | "premium";
 
 export interface User {
   _id: string; 
@@ -6,6 +7,46 @@ export interface User {
   email: string;
   role: UserRole;
   avatar?: string;
+  isAdminApproved: boolean;   
+  isProfileComplete: boolean;
+  isEmailVerify: boolean;
+  
+  // --- Corrections pour Profil.tsx, ProfilVendor.tsx et DashVendor ---
+  phone?: string;
+  bio?: string;
+  vendorPlan?: VendorPlan;
+  isWaitingApproval?: boolean;
+  serviceMainImage?: string;
+  verified?: boolean; // Utilisé dans Profil.tsx
+  address?: {
+    street: string;
+    city: string;
+    zip: string;
+  };
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  checkAuth: () => Promise<void>;
+  setUser: (user: User | null) => void;
+  setLoading: (status: boolean) => void;
+  login: (credentials: LoginCredentials) => Promise<User>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
 }
 
 export interface LoginResponse {
@@ -13,33 +54,12 @@ export interface LoginResponse {
   user: User;
 }
 
-export interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<User>;
-  logout: () => Promise<void>;
+export interface ApiResponse {
+  message: string;
 }
 
-
-export interface Service {
- _id: string;
-  title: string;
-  vendor: {
-  name: string;
-  images?: string[];
-};
-  description: string;
-  category: string;
-  price: number;
-  images?: string[];
-  provider: string;
-  city: string;
-  rating: number;
-  status: BookingStatus;
-}
-
- export interface BreadcrumbsProps {
+// Changé de "Breadcrumbs" à "BreadcrumbsProps" pour éviter l'erreur TS1485 (conflit type/composant)
+export interface BreadcrumbsProps {
   service?: {
     _id: string;
     title?: string;
@@ -48,53 +68,8 @@ export interface Service {
   };
 }
 
-export type BookingStatus = "pending"| "confirmed" | "cancelled" | "completed";
-export interface Booking {
-  _id: string;
-  email?: string;
-  bookingDate: string;
-  status: BookingStatus;
-  totalPrice: number;
-  notes?: string;
- service: {
-    _id: string;
-    title: string;
-    images?: string[];
-  };
- vendor: {
-    _id: string;
-    name: string;
-  };
-  client: { 
-    _id: string;
-    name: string;
-  };
- createdAt: string;
-}
-
-
-export interface Message {
-  _id: string;
-  sender: {
-    _id: string;
-    name: string;
-    email?: string;
-  };
-  receiver: {
-    _id: string;
-    name: string;
-    email?: string;
-  };
-  content: string;
-  isRead: boolean;
-  createdAt: string;
-}
-
-
 export interface VendorStats {
   currentMonthRevenue: number;
   revenueGrowth: number;
   pendingServices: number;
 }
-
-

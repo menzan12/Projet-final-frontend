@@ -1,12 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  LogOut,
-  User as UserIcon,
-  LayoutDashboard,
-  ChevronDown,
-  Store,
-} from "lucide-react";
+import { LogOut, LayoutDashboard, ChevronDown, Store } from "lucide-react";
 import type { User } from "../../../types";
 
 interface Props {
@@ -18,7 +12,6 @@ const UserMenu = ({ user, onLogout }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fermer le menu si clic en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -29,94 +22,86 @@ const UserMenu = ({ user, onLogout }: Props) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Définition dynamique du lien du Dashboard selon le rôle
+  const getDashboardLink = () => {
+    switch (user.role) {
+      case "admin":
+        return "/dashAdmin";
+      case "vendor":
+        return "/dashVendor";
+      default:
+        return "/dashClient";
+    }
+  };
+
   return (
     <div className="relative" ref={menuRef}>
-      {/* BOUTON */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 p-1 pr-3 rounded-full hover:bg-gradient-to-r hover:from-blue-500 hover:to-orange-500 transition-all duration-300"
+        className="flex items-center gap-3 p-1.5 pl-2 rounded-2xl hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100"
       >
-        <img
-          src={
-            user.avatar ||
-            `https://ui-avatars.com/api/?name=${user.name}&background=0D8ABC&color=fff`
-          }
-          className="w-9 h-9 rounded-full object-cover ring-2 ring-orange-400"
-          alt={user.name}
-        />
+        <div className="relative">
+          <img
+            src={
+              user.avatar ||
+              `https://ui-avatars.com/api/?name=${user.name}&background=0D8ABC&color=fff`
+            }
+            className="w-9 h-9 rounded-xl object-cover ring-2 ring-white shadow-sm"
+            alt={user.name}
+          />
+          <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+        </div>
 
-        <div className="hidden sm:flex flex-col items-start">
-          <span className="text-sm font-bold text-gray-800">{user.name}</span>
-          <span className="text-[10px] font-bold uppercase bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-            {user.role}
+        <div className="hidden lg:flex flex-col items-start leading-tight">
+          <span className="text-sm font-black text-gray-900">{user.name}</span>
+          <span className="text-[10px] font-bold uppercase text-blue-600 tracking-tighter">
+            Mode {user.role}
           </span>
         </div>
 
         <ChevronDown
-          className={`w-4 h-4 text-gray-600 transition-transform duration-300 ${
+          className={`w-4 h-4 text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
-      {/* MENU */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-60 bg-white rounded-xl shadow-2xl z-50 animate-fadeIn">
-          <div className="px-4 py-3 border-b border-gray-200">
-            <p className="text-sm font-medium truncate text-gray-700">
+        <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="px-5 py-4 bg-gray-50/50 border-b border-gray-100">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
+              Compte
+            </p>
+            <p className="text-sm font-bold text-gray-900 truncate">
               {user.email}
             </p>
           </div>
 
-          <div className="p-1 space-y-1">
-            {/* ADMIN */}
-            {user.role === "admin" && (
-              <Link
-                to="/admin"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 transition-all"
-              >
-                <LayoutDashboard className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-700">Admin Dashboard</span>
-              </Link>
-            )}
+          <div className="p-2">
+            <Link
+              to={getDashboardLink()}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-blue-50 text-gray-700 hover:text-blue-600 transition-all group"
+            >
+              {user.role === "vendor" ? (
+                <Store className="w-5 h-5" />
+              ) : (
+                <LayoutDashboard className="w-5 h-5" />
+              )}
+              <span className="font-bold text-sm">Tableau de bord</span>
+            </Link>
 
-            {/* VENDOR */}
-            {user.role === "vendor" && (
-              <Link
-                to="/vendorDash"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-orange-50 hover:to-blue-50 transition-all"
-              >
-                <Store className="w-4 h-4 text-orange-500" />
-                <span className="text-gray-700">Dashboard Vendeur</span>
-              </Link>
-            )}
+            <div className="my-2 border-t border-gray-100"></div>
 
-            {/* CLIENT */}
-            {user.role === "client" && (
-              <Link
-                to="/ClientDash"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 transition-all"
-              >
-                <UserIcon className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-700">Mes Commandes</span>
-              </Link>
-            )}
-
-            <div className="border-t border-gray-200 my-1"></div>
-
-            {/* LOGOUT */}
             <button
               onClick={() => {
                 setIsOpen(false);
                 onLogout();
               }}
-              className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+              className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all"
             >
-              <LogOut className="w-4 h-4" />
-              Déconnexion
+              <LogOut className="w-5 h-5" />
+              <span className="font-bold text-sm">Déconnexion</span>
             </button>
           </div>
         </div>

@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import Hero from "../components/home/Hero";
-import Navbar from "../components/Navbar";
 import {
   ArrowRight,
   Monitor,
@@ -10,7 +8,9 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import Footer from "../components/Footer";
+import Navbar from "../Components/Navbar";
+import Hero from "../Components/Home/navbar/Hero";
+import Footer from "../Components/Footer";
 
 function Home() {
   return (
@@ -19,7 +19,7 @@ function Home() {
       <Hero />
 
       {/* --- SECTION STATS : Épurée et Impactante --- */}
-      <section className="py-20 bg-white relative z-10 -mt-10">
+      <section className="py-20 bg-white relative z-10 ">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -133,7 +133,7 @@ function Home() {
           <div className="mt-16 text-center">
             <Link
               to="/services"
-              className="px-4 py-3  font-semibold rounded-lg border text-orange-400 hover:text-orange-600 hover:bg-orange-100  "
+              className="px-4 py-3 font-semibold rounded-lg border border-orange-200 text-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-colors"
             >
               Voir toutes les catégories
             </Link>
@@ -160,8 +160,9 @@ function Home() {
                   sécurisé et sans engagement.
                 </p>
                 <div className="flex flex-wrap gap-5 justify-center lg:justify-start">
+                  {/* MODIFICATION : Lien mis à jour vers /register */}
                   <Link
-                    to="/auth?mode=signup"
+                    to="/register"
                     className="px-10 py-5 rounded-2xl font-black bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-900/40 transition-all hover:-translate-y-1"
                   >
                     Commencer maintenant
@@ -175,7 +176,7 @@ function Home() {
                 </div>
               </div>
 
-              <div className="hidden lg:grid grid-cols-2 gap-4 animate-pulse-slow">
+              <div className="hidden lg:grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div className="h-40 bg-white/5 rounded-3xl backdrop-blur-sm border border-white/10"></div>
                   <div className="h-64 bg-white/5 rounded-3xl backdrop-blur-sm border border-white/10"></div>

@@ -1,7 +1,16 @@
+/* 1. TOUS les imports en haut du fichier */
 @import "tailwindcss";
+@import "react-toastify/dist/ReactToastify.css";
+
+/* 2. Les plugins ensuite */
 @plugin "daisyui";
 
+/* 3. Définitions globales */
+html {
+  overflow-y: scroll;
+}
 
+/* 4. Couche Utilities pour les animations personnalisées */
 @layer utilities {
   @keyframes slide-up {
     from {
@@ -30,4 +39,25 @@
   .animate-fade-in {
     animation: fade-in 0.8s ease-out forwards;
   }
+}
+
+/* 5. Personnalisation de React-Toastify */
+/* On regroupe les styles pour éviter les répétitions */
+.Toastify__toast {
+  border-radius: 16px !important;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.Toastify__toast--success { 
+  background-color: #16a34a !important; 
+}
+
+.Toastify__toast--error { 
+  background-color: #dc2626 !important; 
+}
+
+.Toastify__progress-bar {
+  background: white !important;
 }

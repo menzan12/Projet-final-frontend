@@ -14,34 +14,6 @@ import { Link } from "react-router-dom";
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-100">
-      {/* SECTION NEWSLETTER / CTA PRE-FOOTER */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-12">
-        <div className="bg-blue-600 rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-blue-200">
-          <div className="text-center md:text-left">
-            <h3 className="text-2xl md:text-3xl font-black text-white mb-2">
-              Prêt à commencer ?
-            </h3>
-            <p className="text-blue-100 font-medium">
-              Rejoignez plus de 5000 talents et clients sur SkillMarket.
-            </p>
-          </div>
-          <div className="flex w-full md:w-auto gap-2">
-            <Link
-              to="/register"
-              className="bg-white text-blue-600 px-8 py-4 rounded-2xl font-bold hover:bg-orange-50 transition-all text-center flex-1 md:flex-none"
-            >
-              S'inscrire
-            </Link>
-            <Link
-              to="/contact"
-              className="bg-blue-700 text-white border border-blue-500 px-8 py-4 rounded-2xl font-bold hover:bg-blue-800 transition-all text-center flex-1 md:flex-none"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* FOOTER PRINCIPAL */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -188,15 +160,21 @@ export default function Footer() {
             réservés.
           </p>
           <div className="flex gap-6 text-sm font-bold text-gray-400">
-            <a href="#" className="hover:text-blue-600 transition-colors">
+            <Link
+              to="/privacy"
+              className="hover:text-blue-600 transition-colors"
+            >
               Confidentialité
-            </a>
-            <a href="#" className="hover:text-blue-600 transition-colors">
+            </Link>
+            <Link to="/terms" className="hover:text-blue-600 transition-colors">
               CGU
-            </a>
-            <a href="#" className="hover:text-blue-600 transition-colors">
+            </Link>
+            <Link
+              to="/cookies"
+              className="hover:text-blue-600 transition-colors"
+            >
               Cookies
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,105 +1,108 @@
 import { useState } from "react";
-import Logo from "./home/navbar/Logo";
-import MobileMenu from "./home/navbar/MobileMenu";
-import UserMenu from "./home/navbar/UserMenu";
-import { useAuth } from "../hooks/useAuth";
+
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { useAuthStore } from "../stores/useAuthStore";
+import Logo from "./Home/navbar/Logo";
+import UserMenu from "./Home/navbar/UserMenu";
+import MobileMenu from "./Home/navbar/MobileMenu";
 
 const Navbar = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
+  // Fonction pour vérifier si le lien est actif
   const isActive = (path: string) => location.pathname === path;
 
-  return (
-    <nav className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Logo />
+  // Style commun pour les liens de navigation desktop
+  const navLinkStyles = (path: string) => `
+    px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300
+    ${
+      isActive(path)
+        ? "bg-blue-50 text-blue-600 shadow-sm"
+        : "text-gray-500 hover:text-orange-600 hover:bg-orange-50"
+    }
+  `;
 
-        {/* Liens publics (desktop) */}
-        <div className="hidden md:flex gap-4">
-          <Link
-            to="/"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive("/")
-                ? "bg-blue-100 text-blue-600"
-                : "text-orange-400 hover:text-orange-600 hover:bg-orange-100"
-            }`}
-          >
+  return (
+    <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 h-20 flex items-center justify-between">
+        {/* Logo Section */}
+        <div className="flex-shrink-0">
+          <Logo />
+        </div>
+
+        {/* Centre : Liens de navigation (Desktop) */}
+        <div className="hidden md:flex items-center gap-2 bg-gray-50/50 p-1.5 rounded-2xl border border-gray-100">
+          <Link to="/" className={navLinkStyles("/")}>
             Accueil
           </Link>
-          <Link
-            to="/services"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive("/services")
-                ? "bg-blue-100 text-blue-600"
-                : "text-orange-400 hover:text-orange-600 hover:bg-orange-100"
-            }`}
-          >
+          <Link to="/services" className={navLinkStyles("/services")}>
             Services
           </Link>
-          <Link
-            to="/about"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive("/about")
-                ? "bg-blue-100 text-blue-600"
-                : "text-orange-400 hover:text-orange-600 hover:bg-orange-100"
-            }`}
-          >
+          <Link to="/about" className={navLinkStyles("/about")}>
             À propos
           </Link>
-          <Link
-            to="/contact"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isActive("/contact")
-                ? "bg-blue-100 text-blue-600"
-                : "text-orange-400 hover:text-orange-600 hover:bg-orange-100"
-            }`}
-          >
+          <Link to="/contact" className={navLinkStyles("/contact")}>
             Contact
           </Link>
         </div>
 
-        {/* Auth desktop */}
-        <div className="hidden md:flex gap-4">
+        {/* Droite : Actions Authentification (Desktop) */}
+        <div className="hidden md:flex items-center gap-3">
           {isAuthenticated && user ? (
             <UserMenu user={user} onLogout={logout} />
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="px-4 text-blue-600 hover:text-white font-semibold rounded-lg border border-blue-500 hover:bg-blue-500 transition flex items-center justify-center"
+                className="px-6 py-2.5 text-blue-600 font-bold text-sm hover:bg-blue-50 rounded-xl transition-colors"
               >
                 Connexion
               </Link>
               <Link
                 to="/register"
-                className="px-4 py-3 text-orange-600 hover:text-white font-semibold rounded-lg border border-orange-300 hover:bg-orange-500 transition flex items-center justify-center"
+                className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5 transition-all"
               >
-                Inscription
+                S'inscrire
               </Link>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Burger button */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden p-2 rounded-lg hover:bg-gray-100"
-        >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {/* Bouton Menu Mobile */}
+        <div className="md:hidden">
+          <button
+            onClick={() => setOpen(!open)}
+            className={`p-2.5 rounded-xl transition-all ${
+              open
+                ? "bg-orange-100 text-orange-600"
+                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+            }`}
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
-      {/* Menu mobile */}
+      {/* Overlay et Menu Mobile */}
       {open && (
-        <MobileMenu
-          user={user}
-          isAuthenticated={isAuthenticated}
-          closeMenu={() => setOpen(false)}
-        />
+        <>
+          {/* Background overlay pour fermer le menu en cliquant à côté */}
+          <div
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl z-50 md:hidden animate-in slide-in-from-top-2 duration-300">
+            <MobileMenu
+              user={user}
+              isAuthenticated={isAuthenticated}
+              closeMenu={() => setOpen(false)}
+            />
+          </div>
+        </>
       )}
     </nav>
   );

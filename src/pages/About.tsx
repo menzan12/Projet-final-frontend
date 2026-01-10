@@ -8,8 +8,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
 
 export default function About() {
   return (
@@ -19,7 +19,10 @@ export default function About() {
         {/* --- HERO SECTION --- */}
         <section className="relative py-20 lg:py-32 bg-blue-50 overflow-hidden">
           {/* Décoration d'arrière-plan */}
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-100/50 clip-path-slant hidden lg:block"></div>
+          <div
+            className="absolute top-0 right-0 w-1/3 h-full bg-blue-100/50 hidden lg:block"
+            style={{ clipPath: "polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
+          ></div>
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -61,6 +64,7 @@ export default function About() {
                     src="/image/equipe-commerciale.jpg"
                     alt="Notre équipe au travail"
                     className="w-full h-[500px] object-cover"
+                    loading="lazy"
                   />
                 </div>
                 {/* Badge flottant */}
@@ -104,13 +108,15 @@ export default function About() {
             <div className="grid grid-cols-2 gap-4">
               <img
                 src="/image/Office.jpg"
-                className="rounded-3xl h-64 w-full object-cover mt-12"
-                alt="Office"
+                className="rounded-3xl h-64 w-full object-cover mt-12 shadow-lg"
+                alt="Nos bureaux"
+                loading="lazy"
               />
               <img
                 src="/image/Meeting.jpg"
-                className="rounded-3xl h-64 w-full object-cover"
-                alt="Meeting"
+                className="rounded-3xl h-64 w-full object-cover shadow-lg"
+                alt="Réunion d'équipe"
+                loading="lazy"
               />
             </div>
             <div>
@@ -150,7 +156,7 @@ export default function About() {
         <section className="py-24 bg-gray-50">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className="text-4xl font-black text-gray-900 mb-6 font-display">
+              <h2 className="text-4xl font-black text-gray-900 mb-6">
                 Ce qui nous anime
               </h2>
               <p className="text-gray-500 font-medium">
@@ -202,7 +208,7 @@ export default function About() {
         </section>
 
         {/* --- SECTION ÉQUIPE --- */}
-        <section className="py-24">
+        <section className="py-24 mb-20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[3rem] p-10 md:p-20 overflow-hidden relative">
               <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
@@ -212,10 +218,10 @@ export default function About() {
                   </h2>
                   <p className="text-blue-100 text-lg mb-8 leading-relaxed">
                     Développeurs, designers et experts en relation client, nous
-                    travaillons tous depuis Abidjan pour offrir la meilleure
+                    travailons tous depuis Abidjan pour offrir la meilleure
                     expérience de service en Afrique.
                   </p>
-                  <button className="flex items-center gap-3 font-bold text-white group">
+                  <button className="flex items-center gap-3 font-bold text-white group outline-none focus:ring-2 focus:ring-blue-300 rounded-lg p-1">
                     <Users2 className="h-6 w-6" />
                     <span>Voir nos postes ouverts</span>
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
@@ -226,24 +232,28 @@ export default function About() {
                     <img
                       src="/image/Team.jpg"
                       className="rounded-2xl h-40 w-full object-cover"
-                      alt="Team member"
+                      alt="Membre de l'équipe"
+                      loading="lazy"
                     />
                     <img
                       src="/image/chauffeur.jpg"
                       className="rounded-2xl h-56 w-full object-cover"
-                      alt="chauffeur"
+                      alt="Nos prestataires partenaires"
+                      loading="lazy"
                     />
                   </div>
                   <div className="space-y-4 pt-8">
                     <img
                       src="/image/dame.jpg"
                       className="rounded-2xl h-56 w-full object-cover"
-                      alt="dame"
+                      alt="Expert SkillMarket"
+                      loading="lazy"
                     />
                     <img
                       src="/image/boy.jpg"
                       className="rounded-2xl h-40 w-full object-cover"
-                      alt="boy"
+                      alt="L'avenir du service"
+                      loading="lazy"
                     />
                   </div>
                 </div>
