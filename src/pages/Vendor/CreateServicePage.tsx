@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IKUpload, IKContext } from "imagekitio-react";
 import axios from "axios";
-import ServiceDetailsForm from "../../Components/Vendor/DetailsForm";
-import ServiceScheduleForm from "../../Components/Vendor/ScheduleForm";
+import ServiceDetailsForm from "../../components/Vendor/DetailsForm";
+import ServiceScheduleForm from "../../components/Vendor/ScheduleForm";
 
 // Type pour les créneaux horaires
 interface TimeSlot {

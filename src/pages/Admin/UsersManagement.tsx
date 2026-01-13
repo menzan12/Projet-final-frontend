@@ -11,8 +11,8 @@ import {
   ShieldCheck,
   MapPin,
 } from "lucide-react";
-import Sidebar from "../../Components/Sidebar";
-import HeaderAdmin from "../../Components/admin/HeaderAdmin";
+import Sidebar from "../../components/Sidebar";
+import HeaderAdmin from "../../components/admin/HeaderAdmin";
 import api from "../../api/axios";
 
 type Role = "client" | "vendor";

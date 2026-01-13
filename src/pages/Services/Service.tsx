@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
 import api from "../../api/axios";
-import FiltersServices from "../../Components/Services/FiltersServices";
-import ListServices from "../../Components/Services/ListServices";
-import Navbar from "../../Components/Navbar";
-import Footer from "../../Components/Footer";
+import FiltersServices from "../../components/Services/FiltersServices";
+import ListServices from "../../components/Services/ListServices";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import type { Service } from "../../types/service";
-import Breadcrumbs from "../../Components/Services/Breadcrumbs";
+import Breadcrumbs from "../../components/Services/Breadcrumbs";
 
 type SortOption = "recommanded" | "price-asc" | "rating-desc";
 

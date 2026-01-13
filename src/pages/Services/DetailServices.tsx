@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react"; // Pour la modal d'auth
 import api from "../../api/axios";
 import { useAuthStore } from "../../stores/useAuthStore";
-import Navbar from "../../Components/Navbar";
-import InfoVendor from "../../Components/Services/InfoVendor";
-import ServiceScheduler from "../../Components/Services/ServiceScheduler";
+import Navbar from "../../components/Navbar";
+import InfoVendor from "../../components/Services/InfoVendor";
+import ServiceScheduler from "../../components/Services/ServiceScheduler";
 
 export default function DetailServices() {
   const navigate = useNavigate();

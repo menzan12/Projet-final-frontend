@@ -10,7 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import api from "../../api/axios";
-import Navbar from "../../Components/Navbar";
+import Navbar from "../../components/Navbar";
 import { toast } from "react-toastify";
 
 export default function BookingPage() {

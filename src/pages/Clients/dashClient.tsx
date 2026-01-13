@@ -11,8 +11,8 @@ import {
 import api from "../../api/axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
-import Navbar from "../../Components/Navbar";
-import Sidebar from "../../Components/Sidebar";
+import Navbar from "../../components/Navbar";
+import Sidebar from "../../components/Sidebar";
 import type { Booking } from "../../types/booking";
 
 /* ---------- HELPERS ---------- */

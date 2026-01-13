@@ -9,9 +9,9 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
-import Sidebar from "../../Components/Sidebar";
-import HeaderVendor from "../../Components/Vendor/HeaderVendor";
-import TableRow from "../../Components/Vendor/TableRow";
+import Sidebar from "../../components/Sidebar";
+import HeaderVendor from "../../components/Vendor/HeaderVendor";
+import TableRow from "../../components/Vendor/TableRow";
 import { useAuthStore } from "../../stores/useAuthStore";
 import type { Service } from "../../types/service";
 import type { Booking } from "../../types/booking";

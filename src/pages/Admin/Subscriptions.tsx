@@ -7,8 +7,8 @@ import {
   Loader2,
   CheckCircle2,
 } from "lucide-react";
-import Sidebar from "../../Components/Sidebar";
-import HeaderAdmin from "../../Components/admin/HeaderAdmin";
+import Sidebar from "../../components/Sidebar";
+import HeaderAdmin from "../../components/admin/HeaderAdmin";
 import api from "../../api/axios";
 import { toast } from "react-toastify"; // Utilisation de Toastify
 

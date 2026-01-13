@@ -1,9 +1,9 @@
-import Sidebar from "../../Components/Sidebar";
-import AdminPendingVendors from "../../Components/admin/AdminPendingVendors";
-import HeaderAdmin from "../../Components/admin/HeaderAdmin";
-import StatsAdmin from "../../Components/admin/StatsAdmin";
-import RecentBookings from "../../Components/admin/RecentBookings";
-import BookingChart from "../../Components/admin/BookingChart";
+import Sidebar from "../../components/Sidebar";
+import AdminPendingVendors from "../../components/admin/AdminPendingVendors";
+import HeaderAdmin from "../../components/admin/HeaderAdmin";
+import StatsAdmin from "../../components/admin/StatsAdmin";
+import RecentBookings from "../../components/admin/RecentBookings";
+import BookingChart from "../../components/admin/BookingChart";
 
 export default function DashAdmin() {
   const handleSearch = (query: string) => {

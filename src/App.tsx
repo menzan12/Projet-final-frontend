@@ -12,30 +12,30 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Pages
-import Home from "./Pages/Home";
-import Login from "./Pages/Login";
-import Register from "./Pages/Register";
-import NotFound from "./Pages/NotFound";
-import Services from "./Pages/Services/Service";
-import DashVendor from "./Pages/Vendor/dashVendor";
-import ProfilVendor from "./Pages/Vendor/ProfilVendor";
-import DashClient from "./Pages/Clients/dashClient";
-import Contact from "./Pages/Contact";
-import About from "./Pages/About";
-import DetailServices from "./Pages/Services/DetailServices";
-import DashAdmin from "./Pages/Admin/dashAdmin";
-import UsersManagement from "./Pages/Admin/UsersManagement";
-import Subscriptions from "./Pages/Admin/Subscriptions";
-import Analytics from "./Pages/Admin/Analytics";
-import Profil from "./Pages/Profil";
-import VendorService from "./Pages/Vendor/VendorService";
-import VendorBookings from "./Pages/Vendor/VendorBooking";
-import CreateService from "./Pages/Vendor/CreateServicePage";
-import BookingPage from "./Pages/Services/BookingPage";
-import MyBooking from "./Pages/MyBooking";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
+import Services from "./pages/Services/Service";
+import DashVendor from "./pages/Vendor/dashVendor";
+import ProfilVendor from "./pages/Vendor/ProfilVendor";
+import DashClient from "./pages/Clients/dashClient";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
+import DetailServices from "./pages/Services/DetailServices";
+import DashAdmin from "./pages/Admin/dashAdmin";
+import UsersManagement from "./pages/Admin/UsersManagement";
+import Subscriptions from "./pages/Admin/Subscriptions";
+import Analytics from "./pages/Admin/Analytics";
+import Profil from "./pages/Profil";
+import VendorService from "./pages/Vendor/VendorService";
+import VendorBookings from "./pages/Vendor/VendorBooking";
+import CreateService from "./pages/Vendor/CreateServicePage";
+import BookingPage from "./pages/Services/BookingPage";
+import MyBooking from "./pages/MyBooking";
 
 // Composants Globaux
-import AIChat from "./Components/AIChat"; // Importation du Chat IA
+import AIChat from "./components/AIChat"; // Importation du Chat IA
 
 // --- COMPOSANT DE PROTECTION AVANCÉ ---
 const AuthGuard = ({ allowedRoles }: { allowedRoles?: string[] }) => {

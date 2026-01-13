@@ -13,7 +13,7 @@ import {
 import { toast } from "react-toastify";
 import api from "../../api/axios";
 import type { Conversation, Message } from "../../types/Message";
-import UniversalChat from "../../Components/UniversalChat";
+import UniversalChat from "../../components/UniversalChat";
 
 export default function VendorBookings() {
   const navigate = useNavigate();
@@ -275,7 +275,7 @@ export default function VendorBookings() {
           </div>
         ) : (
           <div className="animate-in slide-in-from-right-5 duration-500">
-              <UniversalChat
+            <UniversalChat
               title="Support & Ventes"
               accentColor="blue"
               conversations={conversations}

@@ -13,7 +13,7 @@ import api from "../../api/axios";
 
 // Import des types basés sur vos interfaces
 import type { Service, Availability } from "../../types/service";
-import QuotaUpgradeCard from "../../Components/Vendor/QuotaUpgradeCard";
+import QuotaUpgradeCard from "../../components/Vendor/QuotaUpgradeCard";
 
 const PLAN_LIMITS: Record<string, number> = {
   free: 3,

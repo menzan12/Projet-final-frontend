@@ -16,15 +16,15 @@ import {
 import { IKContext, IKUpload } from "imagekitio-react";
 
 // Imports des composants
-import OnboardingSidebar from "../../Components/Vendor/OnboardingSidebar";
-import InputField from "../../Components/Vendor/InputField";
-import AgendaItem from "../../Components/Vendor/AgendaItem";
-import ProfilHeader from "../../Components/Vendor/ProfilHeader";
-import BusinessDetails from "../../Components/Vendor/BusinessDetails";
-import SkillsDetails from "../../Components/Vendor/SkillsDetails";
-import DocumentUpload from "../../Components/DocumentUpload";
-import BankingDetails from "../../Components/Vendor/BankingDetails";
-import SuccessOnboarding from "../../Components/Vendor/SuccessOnboarding";
+import OnboardingSidebar from "../../components/Vendor/OnboardingSidebar";
+import InputField from "../../components/Vendor/InputField";
+import AgendaItem from "../../components/Vendor/AgendaItem";
+import ProfilHeader from "../../components/Vendor/ProfilHeader";
+import BusinessDetails from "../../components/Vendor/BusinessDetails";
+import SkillsDetails from "../../components/Vendor/SkillsDetails";
+import DocumentUpload from "../../components/DocumentUpload";
+import BankingDetails from "../../components/Vendor/BankingDetails";
+import SuccessOnboarding from "../../components/Vendor/SuccessOnboarding";
 
 import { useAuthStore } from "../../stores/useAuthStore";
 import api from "../../api/axios";
@@ -234,12 +234,16 @@ export default function ProfilVendor() {
                 <InputField
                   label="Prénom"
                   value={formData.firstName}
-                  onChange={(v: string) => setFormData({ ...formData, firstName: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, firstName: v })
+                  }
                 />
                 <InputField
                   label="Nom"
                   value={formData.lastName}
-                  onChange={(v: string) => setFormData({ ...formData, lastName: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, lastName: v })
+                  }
                 />
                 <InputField
                   label="Email"
@@ -253,7 +257,9 @@ export default function ProfilVendor() {
                   placeholder="+33 6..."
                   icon={<Phone size={16} />}
                   value={formData.phone}
-                  onChange={(v: string) => setFormData({ ...formData, phone: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, phone: v })
+                  }
                 />
               </div>
             </section>

@@ -10,7 +10,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore";
-import Navbar from "../Components/Navbar";
+import Navbar from "../components/Navbar";
 
 export default function Profil() {
   const { user: authUser } = useAuthStore();

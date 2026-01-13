@@ -8,9 +8,9 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import Navbar from "../Components/Navbar";
-import Hero from "../Components/Home/navbar/Hero";
-import Footer from "../Components/Footer";
+import Navbar from "../components/Navbar";
+import Hero from "../components/Home/navbar/Hero";
+import Footer from "../components/Footer";
 
 function Home() {
   return (
