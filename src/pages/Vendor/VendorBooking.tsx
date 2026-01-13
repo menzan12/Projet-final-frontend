@@ -275,14 +275,14 @@ export default function VendorBookings() {
           </div>
         ) : (
           <div className="animate-in slide-in-from-right-5 duration-500">
-            <UniversalChat
+              <UniversalChat
               title="Support & Ventes"
               accentColor="blue"
               conversations={conversations}
               messages={messages}
               selectedConvId={selectedConvId}
               currentUserId={currentUserId}
-              onSelectConversation={(id) => setSelectedConvId(id)}
+              onSelectConversation={(id: string) => setSelectedConvId(id)}
               onSendMessage={handleSendMessage}
             />
           </div>

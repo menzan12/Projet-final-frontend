@@ -234,12 +234,12 @@ export default function ProfilVendor() {
                 <InputField
                   label="Prénom"
                   value={formData.firstName}
-                  onChange={(v) => setFormData({ ...formData, firstName: v })}
+                  onChange={(v: string) => setFormData({ ...formData, firstName: v })}
                 />
                 <InputField
                   label="Nom"
                   value={formData.lastName}
-                  onChange={(v) => setFormData({ ...formData, lastName: v })}
+                  onChange={(v: string) => setFormData({ ...formData, lastName: v })}
                 />
                 <InputField
                   label="Email"
@@ -253,7 +253,7 @@ export default function ProfilVendor() {
                   placeholder="+33 6..."
                   icon={<Phone size={16} />}
                   value={formData.phone}
-                  onChange={(v) => setFormData({ ...formData, phone: v })}
+                  onChange={(v: string) => setFormData({ ...formData, phone: v })}
                 />
               </div>
             </section>
