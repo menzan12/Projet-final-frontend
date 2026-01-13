@@ -1,12 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
 import {
   Calendar,
-  LogOut,
-  Plus,
   CheckCircle2,
   FileText,
   Video,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 
 import api from "../../api/axios";
@@ -22,17 +21,16 @@ const formatDate = (date?: string) => {
   return new Date(date).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long",
+    year: "numeric",
   });
 };
 
-/* ---------- COMPONENT ---------- */
 export default function DashClient() {
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Fetch data & Auth check
   useEffect(() => {
     if (!user) {
       navigate("/login");
@@ -53,7 +51,6 @@ export default function DashClient() {
     fetchDashboardData();
   }, [user, navigate]);
 
-  // 2. Calculs mémorisés
   const upcoming = useMemo(
     () =>
       bookings.filter(
@@ -84,113 +81,78 @@ export default function DashClient() {
     {
       label: "À venir",
       value: upcoming.length.toString(),
-      icon: <Calendar size={24} className="text-blue-600" />,
-      color: "bg-blue-50",
+      icon: <Calendar size={22} />,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
     },
     {
       label: "Terminés",
       value: completedCount.toString(),
-      icon: <CheckCircle2 size={24} className="text-green-500" />,
-      color: "bg-green-50",
+      icon: <CheckCircle2 size={22} />,
+      color: "text-green-600",
+      bg: "bg-green-50",
     },
     {
       label: "Factures",
       value: "0",
-      icon: <FileText size={24} className="text-orange-400" />,
-      color: "bg-orange-50",
+      icon: <FileText size={22} />,
+      color: "text-orange-500",
+      bg: "bg-orange-50",
     },
   ];
 
   if (loading)
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-[#F4F7FA]">
-        <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-        <p className="font-black text-gray-400 text-sm tracking-widest uppercase">
-          Chargement du dashboard...
+      <div className="flex h-screen flex-col items-center justify-center bg-[#F8FAFC]">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+        <p className="font-black text-slate-400 text-[10px] tracking-[0.3em] uppercase">
+          Chargement de votre espace...
         </p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA]">
+    <div className="min-h-screen bg-[#F8FAFC]">
       <Navbar />
-      <div className="flex font-sans">
-        {/* --- SIDEBAR --- */}
-        <aside className="hidden lg:flex w-72 bg-white border-r border-gray-100 flex-col sticky top-0 h-screen">
-          <div className="p-8 flex items-center gap-4">
-            <div className="relative shrink-0">
-              <img
-                src={
-                  user?.avatar ||
-                  `https://ui-avatars.com/api/?name=${
-                    user?.name || "User"
-                  }&background=0D8ABC&color=fff`
-                }
-                className="w-12 h-12 rounded-full object-cover border-2 border-blue-500"
-                alt="Avatar"
-              />
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
-            </div>
-            <div className="min-w-0">
-              <h2 className="font-black text-gray-900 leading-none truncate">
-                {user?.name || "Utilisateur"}
-              </h2>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
-                Client Privilège
-              </p>
-            </div>
-          </div>
-
-          <nav className="flex-1 px-4 mt-4 overflow-y-auto">
-            <Sidebar />
-          </nav>
-
-          <div className="p-8 border-t border-gray-50">
-            <button
-              onClick={() => logout()}
-              className="flex items-center gap-3 text-red-500 font-black text-sm hover:translate-x-1 transition-transform"
-            >
-              <LogOut size={18} /> Déconnexion
-            </button>
-          </div>
-        </aside>
+      <div className="flex">
+        {/* --- SIDEBAR (Utilise ton composant Sidebar corrigé) --- */}
+        <Sidebar />
 
         {/* --- CONTENU PRINCIPAL --- */}
-        <main className="flex-1 p-6 lg:p-12">
+        <main className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto">
+          {/* HEADER SECTION */}
           <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
             <div>
-              <h1 className="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">
-                Bonjour, {user?.name?.split(" ")[0]} 👋
+              <h1 className="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+                Bonjour,{" "}
+                <span className="text-blue-600">
+                  {user?.name?.split(" ")[0]}
+                </span>{" "}
+                👋
               </h1>
-              <p className="text-gray-500 font-medium mt-1 italic">
-                Voici le résumé de vos prestations de service.
+              <p className="text-slate-500 font-medium mt-1">
+                Content de vous revoir ! Voici le point sur vos services.
               </p>
             </div>
-            <Link to="/services">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black flex items-center gap-3 shadow-xl shadow-blue-200 transition-all hover:scale-[1.02] active:scale-95">
-                <Plus size={22} strokeWidth={3} />
-                Nouveau besoin ?
-              </button>
-            </Link>
           </header>
 
-          {/* --- STATS --- */}
+          {/* STATS CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
             {stats.map((stat, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-[2rem] p-6 flex justify-between items-center shadow-sm hover:shadow-md transition-shadow"
+                className="bg-white rounded-3xl p-6 flex justify-between items-center shadow-sm border border-slate-100 hover:border-blue-100 transition-all group"
               >
                 <div>
-                  <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">
+                  <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mb-1">
                     {stat.label}
                   </p>
-                  <p className="text-4xl font-black text-gray-900">
+                  <p className="text-3xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">
                     {stat.value}
                   </p>
                 </div>
                 <div
-                  className={`w-14 h-14 ${stat.color} rounded-2xl flex items-center justify-center`}
+                  className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center`}
                 >
                   {stat.icon}
                 </div>
@@ -201,87 +163,112 @@ export default function DashClient() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* PROCHAINE RÉSERVATION */}
             <div className="lg:col-span-7">
-              <h3 className="text-xl font-black text-gray-900 mb-6 flex items-center gap-2">
-                Prochaine Réservation{" "}
-                <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-              </h3>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                  Prochain rendez-vous
+                  <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-ping"></span>
+                </h3>
+              </div>
+
               {nextBooking ? (
-                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-50 overflow-hidden relative">
-                  <div className="flex flex-col md:flex-row gap-8 relative z-10">
-                    <div className="w-full md:w-32 h-32 rounded-3xl overflow-hidden bg-gray-100">
+                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 group">
+                  <div className="flex flex-col md:flex-row gap-8">
+                    <div className="w-full md:w-40 h-40 rounded-[2rem] overflow-hidden bg-slate-100 shadow-inner">
                       <img
                         src={
                           nextBooking.service?.images?.[0] ||
-                          "https://images.unsplash.com/photo-1581578731548-c64695cc6958?q=80&w=200"
+                          "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=300"
                         }
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         alt="service"
                       />
                     </div>
-                    <div className="flex-1">
-                      <span className="text-[10px] font-black px-3 py-1 bg-blue-100 text-blue-600 rounded-full uppercase mb-3 inline-block">
-                        {nextBooking.status}
-                      </span>
-                      <h4 className="text-2xl font-black text-gray-900 mb-4 truncate">
+                    <div className="flex-1 flex flex-col justify-center">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[9px] font-black px-3 py-1 bg-blue-50 text-blue-600 rounded-full uppercase tracking-tighter border border-blue-100">
+                          {nextBooking.status === "confirmed"
+                            ? "Confirmé"
+                            : "En attente"}
+                        </span>
+                      </div>
+                      <h4 className="text-2xl font-black text-slate-900 mb-4 group-hover:text-blue-600 transition-colors">
                         {nextBooking.service?.title}
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-500 font-bold text-sm">
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} className="text-blue-400" />
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                          <div className="p-2 bg-slate-50 rounded-lg text-blue-500">
+                            <Calendar size={16} />
+                          </div>
                           {formatDate(nextBooking.bookingDate)}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Video size={16} className="text-blue-400" />
-                          {nextBooking.time || "À confirmer"}
+                        <div className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                          <div className="p-2 bg-slate-50 rounded-lg text-blue-500">
+                            <Video size={16} />
+                          </div>
+                          {nextBooking.time || "Horaire à confirmer"}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <Link
-                    to={`/bookings/${nextBooking._id}`}
-                    className="mt-8 block bg-gray-900 text-white text-center py-4 rounded-2xl font-black hover:bg-blue-600 transition-colors"
+                  <button
+                    onClick={() => navigate(`/myBooking`)}
+                    className="w-full mt-8 bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-blue-600 transition-all shadow-lg shadow-slate-200"
                   >
-                    Détails du rendez-vous
-                  </Link>
+                    Gérer mes réservations
+                    <ArrowRight size={18} />
+                  </button>
                 </div>
               ) : (
-                <div className="bg-white rounded-[2.5rem] p-16 text-center border-2 border-dashed border-gray-200">
-                  <p className="font-bold text-gray-400">
-                    Aucun projet en cours
+                <div className="bg-white rounded-[2.5rem] p-16 text-center border-2 border-dashed border-slate-200">
+                  <p className="font-bold text-slate-400">
+                    Aucune activité programmée
                   </p>
+                  <Link
+                    to="/explore"
+                    className="text-blue-600 text-sm font-black uppercase mt-4 block hover:underline"
+                  >
+                    Parcourir le catalogue
+                  </Link>
                 </div>
               )}
             </div>
 
-            {/* HISTORIQUE */}
+            {/* ACTIVITÉS RÉCENTES */}
             <div className="lg:col-span-5">
-              <h3 className="text-xl font-black text-gray-900 mb-6">
-                Activités Récentes
+              <h3 className="text-xl font-black text-slate-900 mb-6">
+                Dernières factures
               </h3>
               <div className="space-y-4">
-                {bookings.slice(0, 5).map((item) => (
-                  <div
-                    key={item._id}
-                    className="bg-white rounded-2xl p-4 border border-gray-50 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 shrink-0 font-bold">
-                        {item.service?.title?.charAt(0) || "S"}
+                {bookings.length > 0 ? (
+                  bookings.slice(0, 4).map((item) => (
+                    <div
+                      key={item._id}
+                      className="bg-white rounded-2xl p-4 border border-slate-100 flex items-center justify-between hover:border-blue-200 transition-all group"
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors font-black">
+                          {item.service?.title?.charAt(0) || "S"}
+                        </div>
+                        <div className="truncate">
+                          <p className="font-black text-slate-900 text-[13px] truncate uppercase tracking-tight">
+                            {item.service?.title}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-bold mt-0.5">
+                            {formatDate(item.bookingDate)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="truncate">
-                        <p className="font-black text-gray-900 text-sm truncate">
-                          {item.service?.title}
-                        </p>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase italic">
-                          Le {formatDate(item.bookingDate)}
-                        </p>
-                      </div>
+                      <p className="font-black text-blue-600 text-sm">
+                        {new Intl.NumberFormat("fr-FR").format(item.totalPrice)}{" "}
+                        <span className="text-[10px]">FCFA</span>
+                      </p>
                     </div>
-                    <p className="font-black text-blue-600 text-sm whitespace-nowrap ml-4">
-                      {item.totalPrice?.toLocaleString() || "0"} €
-                    </p>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-slate-400 text-sm font-medium italic">
+                    Aucun historique disponible.
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -33,3 +33,14 @@ export interface Conversation {
   unreadCount: number;
   updatedAt: string;
 }
+
+export interface UniversalChatProps {
+  conversations: Conversation[];
+  messages: Message[];
+  selectedConvId: string | null;
+  currentUserId: string;
+  onSelectConversation: (id: string) => void;
+  onSendMessage: (text: string) => void;
+  title?: string;
+  accentColor?: "blue" | "orange";
+}

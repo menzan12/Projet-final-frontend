@@ -23,11 +23,19 @@ import DashClient from "./Pages/Clients/dashClient";
 import Contact from "./Pages/Contact";
 import About from "./Pages/About";
 import DetailServices from "./Pages/Services/DetailServices";
-import Profil from "./Pages/Profil";
 import DashAdmin from "./Pages/Admin/dashAdmin";
 import UsersManagement from "./Pages/Admin/UsersManagement";
 import Subscriptions from "./Pages/Admin/Subscriptions";
 import Analytics from "./Pages/Admin/Analytics";
+import Profil from "./Pages/Profil";
+import VendorService from "./Pages/Vendor/VendorService";
+import VendorBookings from "./Pages/Vendor/VendorBooking";
+import CreateService from "./Pages/Vendor/CreateServicePage";
+import BookingPage from "./Pages/Services/BookingPage";
+import MyBooking from "./Pages/MyBooking";
+
+// Composants Globaux
+import AIChat from "./Components/AIChat"; // Importation du Chat IA
 
 // --- COMPOSANT DE PROTECTION AVANCÉ ---
 const AuthGuard = ({ allowedRoles }: { allowedRoles?: string[] }) => {
@@ -36,26 +44,21 @@ const AuthGuard = ({ allowedRoles }: { allowedRoles?: string[] }) => {
 
   if (loading) return null;
 
-  // 1. Si pas d'utilisateur connecté
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // 2. LOGIQUE VENDOR : Redirection forcée vers onboarding si profil incomplet
+  // Redirection si le prestataire n'a pas fini son profil
   if (
     user.role === "vendor" &&
     !user.isProfileComplete &&
     location.pathname !== "/profilVendor"
   ) {
-    console.warn(
-      "[Guard] Profil Vendor incomplet. Redirection vers onboarding."
-    );
     return <Navigate to="/profilVendor" replace />;
   }
 
-  // 3. Protection par Rôle (ex: empêcher un client d'aller sur dashAdmin)
+  // Vérification des rôles
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    console.error("[Guard] Accès refusé : Rôle insuffisant.");
     return <Navigate to="/" replace />;
   }
 
@@ -69,7 +72,7 @@ const App = () => {
     checkAuth();
   }, [checkAuth]);
 
-  // Écran de chargement global de l'application
+  // Écran de chargement initial
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
@@ -78,14 +81,9 @@ const App = () => {
             <div className="w-16 h-16 border-4 border-blue-50 rounded-full"></div>
             <div className="w-16 h-16 border-4 border-t-blue-600 rounded-full animate-spin absolute top-0 left-0"></div>
           </div>
-          <div className="text-center">
-            <p className="text-slate-900 font-black text-xl tracking-tight">
-              SkillMarket
-            </p>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em] animate-pulse mt-1">
-              Initialisation sécurisée...
-            </p>
-          </div>
+          <p className="text-slate-900 font-black text-xl tracking-tighter">
+            Skill<span className="text-blue-600">Market</span>
+          </p>
         </div>
       </div>
     );
@@ -93,19 +91,8 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      {/* Conteneur de notifications global */}
-      <ToastContainer
-        position="top-right"
-        autoClose={4000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      {/* Notifications */}
+      <ToastContainer position="top-right" autoClose={4000} theme="colored" />
 
       <Routes>
         {/* --- ROUTES PUBLIQUES --- */}
@@ -128,18 +115,23 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/:id" element={<DetailServices />} />
+        <Route path="/services/:id/book" element={<BookingPage />} />
 
-        {/* --- ROUTES PRIVÉES (ACCESSIBLES PAR TOUS LES CONNECTÉS) --- */}
+        {/* --- ROUTES PRIVÉES (CLIENT & VENDOR) --- */}
         <Route
           element={<AuthGuard allowedRoles={["client", "vendor", "admin"]} />}
         >
           <Route path="/dashClient" element={<DashClient />} />
           <Route path="/profil" element={<Profil />} />
+          <Route path="/myBooking" element={<MyBooking />} />
         </Route>
 
         {/* --- ROUTES VENDEURS --- */}
         <Route element={<AuthGuard allowedRoles={["vendor"]} />}>
           <Route path="/dashVendor" element={<DashVendor />} />
+          <Route path="/vendorService" element={<VendorService />} />
+          <Route path="/vendorBooking" element={<VendorBookings />} />
+          <Route path="/createService" element={<CreateService />} />
         </Route>
 
         {/* --- ROUTES ADMIN --- */}
@@ -150,25 +142,22 @@ const App = () => {
           <Route path="/dashAdmin/graphiques" element={<Analytics />} />
         </Route>
 
-        {/* --- ROUTE ONBOARDING VENDOR --- */}
         <Route
           path="/profilVendor"
           element={
-            user && user.role === "vendor" ? (
-              user.isProfileComplete ? (
-                <Navigate to="/dashVendor" replace />
-              ) : (
-                <ProfilVendor />
-              )
+            user?.role === "vendor" ? (
+              <ProfilVendor />
             ) : (
               <Navigate to="/login" />
             )
           }
         />
-
-        {/* --- 404 --- */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      {/* --- CHAT IA FLOTTANT --- */}
+      {/* On l'affiche uniquement si l'utilisateur est connecté pour qu'il puisse interagir avec l'IA */}
+      {user && <AIChat />}
     </BrowserRouter>
   );
 };

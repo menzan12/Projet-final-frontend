@@ -1,26 +1,31 @@
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Calendar as CalIcon,
   Clock,
   MessageSquare,
+  CheckCircle2,
+  Loader2,
   AlertCircle,
+  ChevronRight,
+  ArrowLeft, // Importation de l'icône de retour
 } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { toast } from "react-toastify";
 import { useAuthStore } from "../stores/useAuthStore";
-import type { Booking } from "../types/booking";
+import api from "../api/axios";
+import type { Booking, BookingStatus } from "../types/booking";
 
-export default function MyBookings() {
+export default function MyBooking() {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"upcoming" | "completed">(
+  const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState<"upcoming" | "history">(
     "upcoming"
   );
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -28,7 +33,8 @@ export default function MyBookings() {
         const res = await api.get("/bookings/my");
         setBookings(res.data);
       } catch (error) {
-        console.error("Erreur API :", error);
+        console.error("Erreur chargement réservations:", error);
+        toast.error("Erreur lors du chargement des réservations");
       } finally {
         setLoading(false);
       }
@@ -36,32 +42,39 @@ export default function MyBookings() {
     fetchBookings();
   }, []);
 
-  // Logique de filtrage optimisée avec useMemo
+  const handleUpdateStatus = async (id: string, newStatus: BookingStatus) => {
+    try {
+      await api.patch(`/bookings/status/${id}`, { status: newStatus });
+      setBookings((prev) =>
+        prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
+      );
+      toast.success(`Statut mis à jour : ${newStatus}`);
+    } catch (error) {
+      toast.error("Impossible de mettre à jour le statut");
+    }
+  };
+
   const filteredBookings = useMemo(() => {
-    return bookings.filter((booking) => {
-      const status = booking.status;
-      const matchesTab =
-        activeTab === "upcoming"
-          ? status === "pending" || status === "confirmed"
-          : status === "completed" || status === "cancelled";
-
+    return bookings.filter((b) => {
+      const isUpcoming = b.status === "pending" || b.status === "confirmed";
+      const matchesTab = activeTab === "upcoming" ? isUpcoming : !isUpcoming;
+      const serviceTitle = b.service?.title || (b.service as any)?.name || "";
+      const partnerName =
+        user?.role === "client" ? b.vendor?.name : b.client?.name;
       const matchesSearch =
-        booking.service.title
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        booking.vendor?.name.toLowerCase().includes(searchTerm.toLowerCase());
-
+        serviceTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        partnerName?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesTab && matchesSearch;
     });
-  }, [bookings, activeTab, searchTerm]);
+  }, [bookings, activeTab, searchTerm, user]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F4F7FA]">
+      <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="font-bold text-gray-500">
-            Récupération de vos rendez-vous...
+          <Loader2 className="animate-spin text-blue-600" size={48} />
+          <p className="font-bold text-slate-400 uppercase tracking-widest text-xs">
+            Initialisation de l'agenda...
           </p>
         </div>
       </div>
@@ -69,51 +82,59 @@ export default function MyBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA] p-6 lg:p-12">
+    <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-12">
       <div className="max-w-6xl mx-auto">
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+        {/* BOUTON RETOUR & TITRE */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-slate-400 hover:text-blue-600 font-bold text-sm mb-6 transition-all group"
+        >
+          <ArrowLeft
+            size={18}
+            className="group-hover:-translate-x-1 transition-transform"
+          />
+          RETOUR
+        </button>
+
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div>
-            <h1 className="text-4xl font-black text-gray-900">
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">
               Mes Réservations
             </h1>
-            <p className="text-gray-500 font-medium mt-1 italic">
+            <p className="text-slate-500 font-medium mt-1">
               {user?.role === "vendor"
-                ? "Gérez vos interventions clients"
-                : "Suivez vos demandes de services"}
+                ? "Gérez vos interventions et vos revenus"
+                : "Consultez et gérez vos rendez-vous programmés"}
             </p>
           </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                size={18}
-              />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Rechercher..."
-                className="w-full bg-white rounded-2xl py-3 pl-12 pr-4 shadow-sm focus:ring-2 focus:ring-blue-400 font-bold text-sm outline-none transition-all"
-              />
-            </div>
+          <div className="relative w-full md:w-80">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+              size={18}
+            />
+            <input
+              className="w-full bg-white rounded-2xl py-4 pl-12 pr-4 shadow-sm border border-slate-100 outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 font-bold transition-all placeholder:text-slate-300"
+              placeholder="Rechercher un service..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
-        {/* TABS */}
-        <div className="flex gap-8 border-b border-gray-200 mb-8">
+        {/* ONGLETS STYLISÉS */}
+        <div className="flex gap-10 border-b border-slate-200 mb-10">
           {[
             { id: "upcoming", label: "À venir" },
-            { id: "completed", label: "Historique" },
+            { id: "history", label: "Historique" },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-4 text-sm font-black relative transition-colors ${
+              className={`pb-4 font-black text-xs uppercase tracking-[0.15em] transition-all relative ${
                 activeTab === tab.id
                   ? "text-blue-600"
-                  : "text-gray-400 hover:text-gray-600"
+                  : "text-slate-400 hover:text-slate-600"
               }`}
             >
               {tab.label}
@@ -128,135 +149,155 @@ export default function MyBookings() {
         <div className="space-y-6">
           {filteredBookings.length > 0 ? (
             filteredBookings.map((booking) => {
-              const isClient = user?.role === "client";
-              const partner = isClient
-                ? booking.vendor
-                : (booking as any).client;
+              const partner =
+                user?.role === "client" ? booking.vendor : booking.client;
 
               return (
                 <div
                   key={booking._id}
-                  className="bg-white rounded-[2.5rem] p-6 shadow-md border border-gray-50 flex flex-col lg:flex-row gap-8 hover:shadow-xl transition-all duration-300"
+                  className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100 flex flex-col lg:flex-row gap-8 hover:shadow-xl hover:border-blue-100 transition-all duration-300 group"
                 >
                   {/* IMAGE DU SERVICE */}
-                  <div className="w-full lg:w-48 h-36 rounded-3xl overflow-hidden shrink-0">
+                  <div className="w-full lg:w-48 h-44 rounded-3xl overflow-hidden shrink-0 bg-slate-100">
                     <img
-                      src={booking.service.images?.[0] || "/placeholder.png"}
-                      alt={booking.service.title}
-                      className="w-full h-full object-cover transform hover:scale-105 transition-transform"
+                      src={
+                        booking.service?.images?.[0] ||
+                        "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=500"
+                      }
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      alt={booking.service?.title}
                     />
                   </div>
 
-                  {/* CORPS DE LA CARTE */}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex flex-wrap gap-2 items-center">
+                  {/* CONTENU */}
+                  <div className="flex-1 space-y-5">
+                    <div className="flex items-center gap-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                        className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
                           booking.status === "confirmed"
-                            ? "bg-blue-100 text-blue-700"
-                            : booking.status === "completed"
-                            ? "bg-green-100 text-green-700"
-                            : booking.status === "cancelled"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
+                            ? "bg-green-50 text-green-600 border border-green-100"
+                            : booking.status === "pending"
+                            ? "bg-amber-50 text-amber-600 border border-amber-100" // Couleur ambre stylisée
+                            : "bg-slate-50 text-slate-500 border border-slate-100"
                         }`}
                       >
-                        {booking.status}
+                        {booking.status === "pending"
+                          ? "En attente"
+                          : booking.status}
                       </span>
-                      <span className="text-[11px] font-bold text-gray-400">
-                        Réf: #{booking._id.slice(-6).toUpperCase()}
+                      <span className="text-[10px] font-bold text-slate-300">
+                        #{booking._id.slice(-6).toUpperCase()}
                       </span>
                     </div>
 
-                    <h3 className="text-2xl font-black text-gray-900 leading-tight">
-                      {booking.service.title}
+                    <h3 className="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">
+                      {booking.service?.title || (booking.service as any)?.name}
                     </h3>
 
-                    <div className="flex items-center gap-2 group">
-                      <div className="w-6 h-6 rounded-full bg-gray-200 overflow-hidden">
-                        <img
-                          src={
-                            partner?.avatar ||
-                            `https://ui-avatars.com/api/?name=${partner?.name}`
-                          }
-                          alt=""
-                        />
-                      </div>
-                      <p className="text-sm font-bold text-gray-600">
-                        {isClient ? "Prestataire : " : "Client : "}
-                        <span className="text-blue-600">
-                          {partner?.name || "Utilisateur"}
-                        </span>
+                    <div className="flex items-center gap-3 bg-slate-50 w-fit p-1.5 pr-4 rounded-2xl border border-slate-100">
+                      <img
+                        src={
+                          partner?.avatar ||
+                          `https://ui-avatars.com/api/?name=${partner?.name}&background=6366f1&color=fff`
+                        }
+                        className="w-8 h-8 rounded-xl object-cover"
+                        alt={partner?.name}
+                      />
+                      <p className="text-sm font-bold text-slate-600">
+                        {user?.role === "client" ? "Expert" : "Client"} :{" "}
+                        <span className="text-blue-600">{partner?.name}</span>
                       </p>
                     </div>
                   </div>
 
                   {/* DATE & PRIX */}
-                  <div className="flex flex-col justify-center gap-3 lg:border-l lg:pl-8 border-gray-100 min-w-[200px]">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 font-bold text-gray-700">
-                        <CalIcon size={16} className="text-blue-500" />
-                        {new Date(booking.bookingDate).toLocaleDateString(
-                          "fr-FR",
-                          { day: "numeric", month: "long" }
-                        )}
+                  <div className="flex flex-col justify-center gap-4 lg:border-l lg:pl-8 min-w-[220px] border-slate-100">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 font-bold text-slate-700">
+                        <CalIcon size={18} className="text-blue-600" />
+                        <span className="text-sm">
+                          {new Date(booking.bookingDate).toLocaleDateString(
+                            "fr-FR",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 font-bold text-gray-500 text-sm">
-                        <Clock size={16} className="text-blue-500" />
-                        {new Date(booking.bookingDate).toLocaleTimeString(
-                          "fr-FR",
-                          { hour: "2-digit", minute: "2-digit" }
-                        )}
+                      <div className="flex items-center gap-3 font-bold text-slate-400">
+                        <Clock size={18} className="text-blue-400" />
+                        <span className="text-sm">
+                          {booking.time || "14:30"}
+                        </span>
                       </div>
                     </div>
-                    <div className="pt-2">
-                      <p className="text-2xl font-black text-gray-900">
-                        {booking.totalPrice.toLocaleString()}{" "}
-                        <span className="text-sm">FCFA</span>
+
+                    <div className="pt-4 border-t border-slate-50">
+                      <p className="text-2xl font-black text-slate-900">
+                        {new Intl.NumberFormat("fr-FR").format(
+                          booking.totalPrice
+                        )}
+                        <span className="text-xs ml-1.5 text-slate-400 font-bold uppercase">
+                          {booking.currency || "FCFA"}
+                        </span>
                       </p>
                     </div>
                   </div>
 
-                  {/* ACTIONS BOUTONS */}
-                  <div className="flex lg:flex-col items-center justify-center gap-3 border-t lg:border-t-0 lg:border-l pt-6 lg:pt-0 lg:pl-6 border-gray-100">
+                  {/* ACTIONS */}
+                  <div className="flex lg:flex-col gap-3 justify-center lg:border-l lg:pl-6 border-slate-100">
+                    {user?.role === "vendor" &&
+                      booking.status === "pending" && (
+                        <button
+                          onClick={() =>
+                            handleUpdateStatus(booking._id, "confirmed" as any)
+                          }
+                          className="p-4 bg-green-500 text-white rounded-2xl hover:bg-green-600 shadow-lg shadow-green-200 transition-all flex items-center justify-center"
+                          title="Accepter"
+                        >
+                          <CheckCircle2 size={24} />
+                        </button>
+                      )}
+
                     <button
-                      onClick={() => navigate(`/chat/${booking._id}`)}
-                      className="flex-1 lg:w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 p-4 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition-all"
+                      onClick={() => navigate(`/chat/${partner?._id}`)}
+                      className="p-4 bg-blue-50 text-blue-600 rounded-2xl hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
                     >
-                      <MessageSquare size={20} />
-                      <span className="lg:hidden">Chat</span>
+                      <MessageSquare size={24} />
                     </button>
+
                     <button
                       onClick={() =>
-                        navigate(`/services/${booking.service._id}`)
+                        navigate(`/dashboard/bookings/${booking._id}`)
                       }
-                      className="flex-[2] lg:w-full bg-gray-900 text-white px-6 py-4 rounded-2xl font-bold hover:bg-blue-600 transition-all"
+                      className="bg-slate-900 text-white p-4 rounded-2xl hover:bg-blue-600 transition-all flex items-center justify-center shadow-lg shadow-slate-200"
                     >
-                      Détails
+                      <ChevronRight size={24} />
                     </button>
                   </div>
                 </div>
               );
             })
           ) : (
-            <div className="text-center py-24 bg-white rounded-[3rem] border-2 border-dashed border-gray-200">
-              <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle size={40} className="text-gray-300" />
+            /* EMPTY STATE */
+            <div className="text-center py-20 bg-white rounded-[3rem] border border-slate-100 shadow-sm">
+              <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle size={40} className="text-slate-200" />
               </div>
-              <h3 className="text-2xl font-black text-gray-900">
-                Rien à afficher ici
+              <h3 className="text-xl font-black text-slate-900">
+                Aucun rendez-vous
               </h3>
-              <p className="text-gray-400 mt-2 max-w-sm mx-auto font-medium">
-                {searchTerm
-                  ? `Aucun résultat pour "${searchTerm}"`
-                  : "Vous n'avez pas encore de réservations dans cette section."}
+              <p className="text-slate-400 mt-2 font-medium">
+                Votre agenda est libre pour le moment.
               </p>
               {!searchTerm && (
                 <button
                   onClick={() => navigate("/services")}
-                  className="mt-8 bg-blue-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg shadow-blue-200 hover:scale-105 transition-transform"
+                  className="mt-8 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all"
                 >
-                  Parcourir les services
+                  Explorer les services
                 </button>
               )}
             </div>
