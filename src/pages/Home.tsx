@@ -9,7 +9,7 @@ import {
   Zap,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
-import Hero from "../components/Home/navbar/Hero";
+import Hero from "../components/home/navbar/Hero";
 import Footer from "../components/Footer";
 
 function Home() {

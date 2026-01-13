@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore";
-import Logo from "./Home/navbar/Logo";
-import UserMenu from "./Home/navbar/UserMenu";
-import MobileMenu from "./Home/navbar/MobileMenu";
+import Logo from "./home/navbar/Logo";
+import UserMenu from "./home/navbar/UserMenu";
+import MobileMenu from "./home/navbar/MobileMenu";
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
